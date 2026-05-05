@@ -1280,8 +1280,8 @@ export const translations = {
 
   // Admin Room Units — page subtitle
   "roomManager.pageSubtitle": { en: "Manage individual rooms, cleanliness status and bed configurations", uk: "Управляйте окремими кімнатами, чистотою та конфігурацією ліжок" },
-  "roomManager.activeRooms":  { en: "active rooms",   uk: "активних кімнат" },
-  "roomManager.inactive":     { en: "inactive",       uk: "неактивних" },
+  "roomManager.activeRooms":    { en: "active rooms",   uk: "активних кімнат" },
+  "roomManager.inactiveCount": { en: "inactive",       uk: "неактивних" },
 
   // Admin Banquets — drag hint
   "banquet.column.dropHere": { en: "Drop here to move", uk: "Перетягніть сюди" },

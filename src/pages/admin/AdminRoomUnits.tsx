@@ -25,7 +25,7 @@ export default function AdminRoomUnits() {
               </span>
               {summary.total !== summary.active && (
                 <span className="text-sm text-muted-foreground">
-                  ({summary.total - summary.active} {t("roomManager.inactive")})
+                  ({summary.total - summary.active} {t("roomManager.inactiveCount")})
                 </span>
               )}
             </div>

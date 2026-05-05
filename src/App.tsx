@@ -16,17 +16,17 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import AdminLayout from "@/components/admin/AdminLayout";
 
-// Public Pages
+// Public Pages — Index stays eager (landing page); heavier pages are lazy-split
 import Index from "./pages/Index";
-import Rooms from "./pages/Rooms";
-import RoomDetails from "./pages/RoomDetails";
-import BookingConfirmation from "./pages/BookingConfirmation";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Policies from "./pages/Policies";
 import NotFound from "./pages/NotFound";
-import Leisure from "./pages/Leisure";
-import Banquet from "./pages/Banquet";
+import Policies from "./pages/Policies";
+const Rooms               = lazy(() => import("./pages/Rooms"));
+const RoomDetails         = lazy(() => import("./pages/RoomDetails"));
+const BookingConfirmation = lazy(() => import("./pages/BookingConfirmation"));
+const About               = lazy(() => import("./pages/About"));
+const Contact             = lazy(() => import("./pages/Contact"));
+const Leisure             = lazy(() => import("./pages/Leisure"));
+const Banquet             = lazy(() => import("./pages/Banquet"));
 
 // Admin Pages (lazy-loaded — each chunk is only fetched when the route is visited)
 const AdminLogin          = lazy(() => import("./pages/admin/AdminLogin"));
