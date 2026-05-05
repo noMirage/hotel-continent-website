@@ -1,0 +1,119 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Cream palette */
+    --background: 32 100% 97%;
+    --foreground: 6 27% 23%;
+
+    --card: 32 100% 98%;
+    --card-foreground: 6 27% 23%;
+
+    --popover: 32 100% 97%;
+    --popover-foreground: 6 27% 23%;
+
+    /* Golden brown = primary */
+    --primary: 28 47% 54%;
+    --primary-foreground: 32 100% 97%;
+
+    /* Dark brown = secondary */
+    --secondary: 22 40% 39%;
+    --secondary-foreground: 32 100% 97%;
+
+    --muted: 30 30% 88%;
+    --muted-foreground: 22 25% 42%;
+
+    /* Warm golden accent */
+    --accent: 32 80% 92%;
+    --accent-foreground: 28 47% 40%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 85% 97%;
+
+    --border: 28 30% 82%;
+    --input: 28 30% 82%;
+    --ring: 22 40% 39%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 32 100% 98%;
+    --sidebar-foreground: 6 27% 23%;
+    --sidebar-primary: 28 47% 54%;
+    --sidebar-primary-foreground: 32 100% 97%;
+    --sidebar-accent: 32 80% 92%;
+    --sidebar-accent-foreground: 28 47% 40%;
+    --sidebar-border: 28 30% 82%;
+    --sidebar-ring: 22 40% 39%;
+
+    --chart-1: 28 47% 54%;
+    --chart-2: 22 40% 39%;
+    --chart-3: 6 27% 23%;
+    --chart-4: 32 80% 70%;
+    --chart-5: 28 30% 65%;
+
+    --sidebar: 32 100% 98%;
+
+    --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Cormorant Garamond', ui-serif, Georgia, serif;
+
+    --shadow-2xs: 0 1px 3px 0px hsl(28 47% 20% / 0.06);
+    --shadow-xs: 0 1px 3px 0px hsl(28 47% 20% / 0.08);
+    --shadow-sm: 0 1px 3px 0px hsl(28 47% 20% / 0.1), 0 1px 2px -1px hsl(28 47% 20% / 0.1);
+    --shadow: 0 1px 3px 0px hsl(28 47% 20% / 0.1), 0 1px 2px -1px hsl(28 47% 20% / 0.1);
+    --shadow-md: 0 4px 6px -1px hsl(28 47% 20% / 0.12), 0 2px 4px -2px hsl(28 47% 20% / 0.08);
+    --shadow-lg: 0 10px 15px -3px hsl(28 47% 20% / 0.12), 0 4px 6px -4px hsl(28 47% 20% / 0.08);
+    --shadow-xl: 0 20px 25px -5px hsl(28 47% 20% / 0.12), 0 8px 10px -6px hsl(28 47% 20% / 0.08);
+    --shadow-2xl: 0 25px 50px -12px hsl(28 47% 20% / 0.2);
+
+    --tracking-normal: 0em;
+    --spacing: 0.25rem;
+  }
+
+  .dark {
+    --background: 6 27% 10%;
+    --foreground: 32 100% 95%;
+    --card: 6 27% 14%;
+    --card-foreground: 32 100% 95%;
+    --popover: 6 27% 18%;
+    --popover-foreground: 32 100% 95%;
+    --primary: 28 47% 60%;
+    --primary-foreground: 6 27% 10%;
+    --secondary: 22 40% 50%;
+    --secondary-foreground: 32 100% 95%;
+    --muted: 6 20% 25%;
+    --muted-foreground: 32 40% 72%;
+    --accent: 22 40% 22%;
+    --accent-foreground: 28 60% 70%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 85% 97%;
+    --border: 6 20% 28%;
+    --input: 6 20% 28%;
+    --ring: 28 47% 60%;
+    --sidebar-background: 6 27% 12%;
+    --sidebar-foreground: 32 100% 95%;
+    --sidebar-primary: 28 47% 60%;
+    --sidebar-primary-foreground: 6 27% 10%;
+    --sidebar-accent: 22 40% 22%;
+    --sidebar-accent-foreground: 28 60% 70%;
+    --sidebar-border: 6 20% 28%;
+    --sidebar-ring: 28 47% 60%;
+    --sidebar: 6 27% 12%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+  }
+}
