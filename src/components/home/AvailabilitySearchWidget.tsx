@@ -146,43 +146,46 @@ export function AvailabilitySearchWidget({ onSearch }: Props) {
         {rooms.map((room, idx) => (
           <div key={room.id} className="rounded-xl border border-border/60 bg-muted/20 overflow-hidden">
             {/* Room header */}
-            <div className="flex items-center gap-3 px-4 py-2.5">
+            <div className="flex items-center gap-2 px-4 py-2.5 flex-wrap">
               <span className="text-sm font-semibold text-foreground min-w-[60px]">
                 {t("roomDetails.roomN").replace("{n}", String(idx + 1))}
               </span>
 
-              {/* Adults */}
-              <div className="flex items-center gap-1.5 flex-1">
-                <Users className="h-3.5 w-3.5 text-primary/60 shrink-0" />
-                <span className="text-xs text-muted-foreground shrink-0">{t("search.adults")}</span>
-                <button type="button" onClick={() => updateRoom(room.id, { adults: Math.max(1, room.adults - 1) })}
-                  className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors ml-1">−</button>
-                <span className="w-5 text-center text-sm font-semibold">{room.adults}</span>
-                <button type="button" onClick={() => updateRoom(room.id, { adults: Math.min(10, room.adults + 1) })}
-                  className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors">+</button>
-              </div>
+              {/* Adults + Children in a wrapping sub-row */}
+              <div className="flex flex-1 flex-wrap items-center gap-x-4 gap-y-2 min-w-0">
+                {/* Adults */}
+                <div className="flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-primary/60 shrink-0" />
+                  <span className="text-xs text-muted-foreground shrink-0">{t("search.adults")}</span>
+                  <button type="button" onClick={() => updateRoom(room.id, { adults: Math.max(1, room.adults - 1) })}
+                    className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors ml-1">−</button>
+                  <span className="w-5 text-center text-sm font-semibold">{room.adults}</span>
+                  <button type="button" onClick={() => updateRoom(room.id, { adults: Math.min(10, room.adults + 1) })}
+                    className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors">+</button>
+                </div>
 
-              {/* Children */}
-              <div className="flex items-center gap-1.5">
-                <Baby className="h-3.5 w-3.5 text-primary/60 shrink-0" />
-                <span className="text-xs text-muted-foreground shrink-0">{t("search.children")}</span>
-                <button type="button" onClick={() => handleChildrenChange(room.id, Math.max(0, room.children - 1))}
-                  className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors ml-1">−</button>
-                <span className="w-5 text-center text-sm font-semibold">{room.children}</span>
-                <button type="button" onClick={() => handleChildrenChange(room.id, Math.min(6, room.children + 1))}
-                  className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors">+</button>
-                {room.children > 0 && (
-                  <button type="button" onClick={() => setExpandedRoom(expandedRoom === room.id ? null : room.id)}
-                    className="ml-1 text-muted-foreground hover:text-foreground transition-colors">
-                    {expandedRoom === room.id ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                  </button>
-                )}
+                {/* Children */}
+                <div className="flex items-center gap-1.5">
+                  <Baby className="h-3.5 w-3.5 text-primary/60 shrink-0" />
+                  <span className="text-xs text-muted-foreground shrink-0">{t("search.children")}</span>
+                  <button type="button" onClick={() => handleChildrenChange(room.id, Math.max(0, room.children - 1))}
+                    className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors ml-1">−</button>
+                  <span className="w-5 text-center text-sm font-semibold">{room.children}</span>
+                  <button type="button" onClick={() => handleChildrenChange(room.id, Math.min(6, room.children + 1))}
+                    className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors">+</button>
+                  {room.children > 0 && (
+                    <button type="button" onClick={() => setExpandedRoom(expandedRoom === room.id ? null : room.id)}
+                      className="ml-1 text-muted-foreground hover:text-foreground transition-colors">
+                      {expandedRoom === room.id ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Remove */}
               {rooms.length > 1 && (
                 <button type="button" onClick={() => removeRoom(room.id)} title={t("roomDetails.removeRoom")}
-                  className="ml-1 text-destructive/60 hover:text-destructive transition-colors shrink-0">
+                  className="text-destructive/60 hover:text-destructive transition-colors shrink-0">
                   <Trash2 className="h-4 w-4" />
                 </button>
               )}
