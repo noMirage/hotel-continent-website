@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useHotelSettings } from "@/hooks/useHotelSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
@@ -36,7 +35,7 @@ export function Header() {
   return (
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-      isHome && !scrolled && !isMenuOpen
+      isHome && !scrolled
         ? "bg-gradient-to-b from-black/50 to-transparent border-transparent"
         : "bg-card/95 backdrop-blur-sm border-b border-border"
     )}>
@@ -97,8 +96,8 @@ export function Header() {
             </Button>
           </div>
           
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-2">
+          {/* Mobile: language toggle only */}
+          <div className="md:hidden flex items-center">
             <button
               onClick={toggleLanguage}
               className="flex items-center gap-1 p-2 text-sm rounded-md hover:bg-accent transition-colors"
@@ -108,47 +107,8 @@ export function Header() {
               <span className="text-muted-foreground/40 text-xs">|</span>
               <span className={`font-semibold text-xs ${language === "uk" ? "text-primary" : "text-muted-foreground"}`}>УК</span>
             </button>
-            <button
-              className="p-2"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? (
-                <X className="h-6 w-6 text-foreground" />
-              ) : (
-                <Menu className="h-6 w-6 text-foreground" />
-              )}
-            </button>
           </div>
         </div>
-        
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-border">
-            <div className="flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className={cn(
-                    "text-base font-medium transition-colors",
-                    location.pathname === link.href
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                  )}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Button asChild className="mt-2">
-                <Link to="/rooms" onClick={() => setIsMenuOpen(false)}>
-                  {t("nav.bookNow")}
-                </Link>
-              </Button>
-            </div>
-          </nav>
-        )}
       </div>
     </header>
   );

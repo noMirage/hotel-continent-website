@@ -223,7 +223,7 @@ export function GallerySection() {
         {/* Mobile: horizontal snap carousel */}
         <div
           ref={carouselRef}
-          className="sm:hidden -mx-4 px-4 flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2"
+          className="sm:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
         >
           {filteredItems.map((item, index) =>

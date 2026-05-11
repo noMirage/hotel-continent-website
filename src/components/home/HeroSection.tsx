@@ -53,7 +53,7 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
         </div>
 
         {/* Search widget */}
-        <div className="w-full max-w-4xl">
+        <div id="search" className="w-full max-w-4xl">
           <AvailabilitySearchWidget onSearch={onSearch} />
         </div>
       </div>

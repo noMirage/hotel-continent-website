@@ -7,6 +7,8 @@ export const translations = {
   "nav.about": { en: "About", uk: "Про нас" },
   "nav.contact": { en: "Contact", uk: "Контакти" },
   "nav.bookNow": { en: "Book Now", uk: "Забронювати" },
+  "nav.banquet": { en: "Banquets", uk: "Банкети" },
+  "nav.search":  { en: "Search",   uk: "Пошук" },
 
   // Hero Section
   "hero.exploreRooms": { en: "Explore Rooms", uk: "Переглянути номери" },
