@@ -82,6 +82,7 @@ export function CalendarBookingDialog({
   const [editCheckOut, setEditCheckOut] = useState<Date | undefined>();
   const [editSpecialRequests, setEditSpecialRequests] = useState("");
   const [editAdminNotes, setEditAdminNotes] = useState("");
+  const [editDepositAmount, setEditDepositAmount] = useState("");
   const [editEarlyCheckinFee, setEditEarlyCheckinFee] = useState("");
   const [editLateCheckoutFee, setEditLateCheckoutFee] = useState("");
   const [editRoomUnitId, setEditRoomUnitId] = useState("");
@@ -186,6 +187,7 @@ export function CalendarBookingDialog({
     setEditCheckOut(parseISO(reservation.check_out_date));
     setEditSpecialRequests(reservation.special_requests ?? "");
     setEditAdminNotes(reservation.admin_notes ?? "");
+    setEditDepositAmount(reservation.deposit_amount != null ? String(reservation.deposit_amount) : "");
     setEditEarlyCheckinFee(reservation.early_checkin_fee > 0 ? String(reservation.early_checkin_fee) : "");
     setEditLateCheckoutFee(reservation.late_checkout_fee > 0 ? String(reservation.late_checkout_fee) : "");
     setEditRoomUnitId(reservation.room_unit_id ?? "");
@@ -312,16 +314,21 @@ export function CalendarBookingDialog({
                     <p className="font-medium">{assignedAdmin?.full_name ?? "—"}</p>
                   </div>
                 )}
-                {reservation.deposit_amount != null && (() => {
+                {(() => {
                   const early2 = Number(reservation.early_checkin_fee ?? 0);
                   const late2  = Number(reservation.late_checkout_fee ?? 0);
                   const accommodationTotal = Number(reservation.total_price) + early2 + late2;
-                  const remaining = Math.max(0, accommodationTotal - Number(reservation.deposit_amount));
+                  if (reservation.deposit_amount != null) {
+                    const remaining = Math.max(0, accommodationTotal - Number(reservation.deposit_amount));
+                    return (
+                      <>
+                        <div><span className="text-muted-foreground">{t("bookings.depositAmount")}</span><p className="font-medium">{hotelConfig.currencySymbol}{Number(reservation.deposit_amount).toLocaleString()}</p></div>
+                        <div><span className="text-muted-foreground">{t("bookings.remainingBalance")}</span><p className="font-medium text-amber-700">{hotelConfig.currencySymbol}{remaining.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p><p className="text-xs text-muted-foreground">+ {t("bookings.touristTax")} ({t("bookings.touristTaxOnSite")})</p></div>
+                      </>
+                    );
+                  }
                   return (
-                    <>
-                      <div><span className="text-muted-foreground">{t("bookings.depositAmount")}</span><p className="font-medium">{hotelConfig.currencySymbol}{Number(reservation.deposit_amount).toLocaleString()}</p></div>
-                      <div><span className="text-muted-foreground">{t("bookings.remainingBalance")}</span><p className="font-medium text-amber-700">{hotelConfig.currencySymbol}{remaining.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p><p className="text-xs text-muted-foreground">+ {t("bookings.touristTax")} ({t("bookings.touristTaxOnSite")})</p></div>
-                    </>
+                    <div><span className="text-muted-foreground">{t("bookings.depositAmount")}</span><p className="font-medium text-muted-foreground">—</p></div>
                   );
                 })()}
                 {reservation.payment_method && (
@@ -490,6 +497,7 @@ export function CalendarBookingDialog({
                       checkOut: editCheckOut,
                       specialRequests: editSpecialRequests,
                       adminNotes: editAdminNotes,
+                      depositAmount: editDepositAmount,
                       earlyCheckinFee: editEarlyCheckinFee,
                       lateCheckoutFee: editLateCheckoutFee,
                       promotionId: editPromotionId,
@@ -642,6 +650,11 @@ export function CalendarBookingDialog({
                 <div className="col-span-2 space-y-1.5">
                   <Label>{t("bookings.adminNotes")}</Label>
                   <Textarea rows={2} value={editAdminNotes} onChange={e => setEditAdminNotes(e.target.value)} />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <Label>{t("bookings.depositAmount")} (UAH)</Label>
+                  <Input type="number" min="0" step="100" placeholder="0"
+                    value={editDepositAmount} onChange={e => setEditDepositAmount(e.target.value)} />
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t("bookings.earlyCheckin")} (UAH)</Label>

@@ -29,6 +29,7 @@ export interface UpdateDetailsInput {
   checkOut: Date;
   specialRequests: string;
   adminNotes: string;
+  depositAmount: string;
   earlyCheckinFee: string;
   lateCheckoutFee: string;
   promotionId: string;
@@ -91,7 +92,7 @@ export function useCalendarBookingMutation({
         reservationId, originalRoomUnitId, originalCheckIn, originalCheckOut,
         roomUnitId, guestName, guestEmail, guestPhone, numGuests,
         checkIn, checkOut, specialRequests, adminNotes,
-        earlyCheckinFee, lateCheckoutFee, promotionId, discountPercent,
+        depositAmount, earlyCheckinFee, lateCheckoutFee, promotionId, discountPercent,
       } = input;
 
       const effectiveRoomUnitId = roomUnitId || originalRoomUnitId;
@@ -123,6 +124,7 @@ export function useCalendarBookingMutation({
         if (lateConflict)  throw new Error(t("common.lateCheckoutConflict"));
       }
 
+      const depositNum = parseFloat(depositAmount);
       const { error } = await supabase.from("reservations").update({
         room_unit_id: effectiveRoomUnitId,
         guest_name: guestName.trim(),
@@ -133,6 +135,7 @@ export function useCalendarBookingMutation({
         check_out_date: coStr,
         special_requests: specialRequests.trim() || null,
         admin_notes: adminNotes.trim() || null,
+        deposit_amount: depositAmount.trim() !== "" && !isNaN(depositNum) ? depositNum : null,
         early_checkin_fee: newEarlyFee,
         late_checkout_fee: newLateFee,
         promotion_id: promotionId || null,

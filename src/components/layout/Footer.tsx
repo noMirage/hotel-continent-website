@@ -54,7 +54,6 @@ export function Footer() {
             <ul className="space-y-2">
               <li><span className="text-sm text-muted-foreground">{t("footer.checkIn")}: {checkInTime}</span></li>
               <li><span className="text-sm text-muted-foreground">{t("footer.checkOut")}: {hotelConfig.checkOutTime}</span></li>
-              <li><Link to="/policies" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.cancellationPolicy")}</Link></li>
               <li><Link to="/policies" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.termsConditions")}</Link></li>
             </ul>
           </div>

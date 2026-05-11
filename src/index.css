@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+#root {
+  overflow-x: hidden;
+}
+
 @layer base {
   :root {
     /* Cream palette */

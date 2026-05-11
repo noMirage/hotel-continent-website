@@ -8,14 +8,30 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-console.log('SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-console.log('SUPABASE_KEY:', import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ? 'EXISTS' : 'MISSING');
+// Wrap fetch with a 30-second timeout so requests never hang indefinitely
+// (e.g. when the JWT refresh stalls after a long idle period).
+function fetchWithTimeout(url: RequestInfo | URL, options: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 30_000);
+
+  // Respect any existing signal from the caller (e.g. Supabase internals)
+  const existing = options.signal as AbortSignal | undefined;
+  if (existing) {
+    if (existing.aborted) controller.abort();
+    else existing.addEventListener("abort", () => controller.abort(), { once: true });
+  }
+
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(tid));
+}
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    // Bypass Web Locks API to prevent AbortError on page transitions
     lock: async (_name, _acquireTimeout, fn) => fn(),
-  }
+  },
+  global: { fetch: fetchWithTimeout },
 });

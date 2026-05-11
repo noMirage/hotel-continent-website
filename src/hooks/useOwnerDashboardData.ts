@@ -35,6 +35,38 @@ export function useOwnerLast6Reservations() {
   });
 }
 
+export function useOwnerMonthGroupBookings(monthStart: string, monthEnd: string) {
+  return useQuery({
+    queryKey: QK.ownerMonthGroupBookings(monthStart),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("group_bookings")
+        .select("check_in_date, check_out_date, total_price, deposit_amount, num_guests, room_unit_ids, status")
+        .in("status", ["CONFIRMED", "CHECK_IN", "CHECK_OUT"])
+        .gte("check_in_date", monthStart)
+        .lte("check_in_date", monthEnd);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+export function useOwnerLast6GroupBookings() {
+  return useQuery({
+    queryKey: QK.ownerLast6GroupBookings(),
+    queryFn: async () => {
+      const sixMonthsAgo = format(subMonths(new Date(), 5), "yyyy-MM-01");
+      const { data, error } = await supabase
+        .from("group_bookings")
+        .select("check_in_date, total_price, num_guests")
+        .in("status", ["CONFIRMED", "CHECK_IN", "CHECK_OUT"])
+        .gte("check_in_date", sixMonthsAgo);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
 export function useOwnerRoomUnitsCount() {
   return useQuery({
     queryKey: QK.ownerRoomUnitsCount(),

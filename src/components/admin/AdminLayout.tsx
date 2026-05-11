@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   Calendar,
@@ -77,6 +78,7 @@ function roleLabel(role: AppRole, t: (k: string) => string): string {
 export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userRole, setUserRole] = useState<AppRole>("admin");
   const { session, role, isLoading, isRoleLoading } = useAdminSession();
@@ -101,14 +103,21 @@ export default function AdminLayout() {
 
   useEffect(() => {
     if (isLoading) return;
-    if (!session) { navigate("/admin"); return; }
+    if (!session) {
+      // Clear all cached query data so a subsequent login as a different user
+      // never sees stale data from the previous session.
+      queryClient.clear();
+      navigate("/admin");
+      return;
+    }
     // Role is still being fetched from the DB — session is known, just wait
     if (isRoleLoading) return;
     if (!role) { supabase.auth.signOut().then(() => navigate("/admin")); return; }
     setUserRole(role);
-  }, [isLoading, isRoleLoading, session, role, navigate]);
+  }, [isLoading, isRoleLoading, session, role, navigate, queryClient]);
 
   const handleLogout = async () => {
+    queryClient.clear();
     await supabase.auth.signOut();
     navigate("/admin");
   };
@@ -164,9 +173,9 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex overflow-x-hidden">
       {/* ── Desktop Sidebar ──────────────────────────────────────────────────── */}
-      <aside className="hidden lg:flex w-64 flex-col bg-card border-r border-border">
+      <aside className="hidden lg:flex fixed top-0 left-0 h-screen w-64 flex-col bg-card border-r border-border z-30">
         <div className="p-6 border-b border-border">
           <Link to="/" className="font-serif text-lg font-bold text-foreground">
             {hotelName}
@@ -249,7 +258,7 @@ export default function AdminLayout() {
       </div>
 
       {/* ── Main Content ──────────────────────────────────────────────────────── */}
-      <main className="flex-1 lg:pt-0 pt-16">
+      <main className="flex-1 min-w-0 overflow-x-hidden lg:pt-0 pt-16 lg:ml-64">
         <div className="p-6 md:p-8">
           <div key={location.pathname} className="animate-in fade-in-0 slide-in-from-bottom-3 duration-300">
             <Outlet />

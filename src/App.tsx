@@ -50,9 +50,10 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000,       // data stays fresh for 5 min
-      gcTime: 15 * 60 * 1000,         // keep unused cache for 15 min
+      gcTime: 60 * 60 * 1000,         // keep unused cache for 1 hour (avoids full skeleton reload on nav)
       retry: 1,                        // fail faster on error (default 3 causes cascading slowness)
       refetchOnWindowFocus: false,     // don't cascade-refetch on every tab switch
+      networkMode: "always",           // don't pause queries on offline detection events
     },
   },
 });

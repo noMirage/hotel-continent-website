@@ -17,7 +17,7 @@ export function useAdminArchiveBookings(enabled = true) {
       const { data, error } = await supabase
         .from("reservations")
         .select("*, room_unit:room_units(room_number, room_type:room_types(name, name_uk))")
-        .eq("status", "CANCELLED")
+        .in("status", ["CANCELLED", "DECLINED"])
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as ArchiveBooking[];

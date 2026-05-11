@@ -23,6 +23,11 @@ function sourceLabel(source: string): { label: string; cls: string } | null {
   return null;
 }
 
+function statusBadge(status: string, t: (k: string) => string): { label: string; cls: string } {
+  if (status === "DECLINED") return { label: t("bookings.declined"), cls: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" };
+  return { label: t("bookings.cancelled"), cls: "bg-destructive/10 text-destructive" };
+}
+
 function BookingDetailsDialog({
   booking,
   onClose,
@@ -31,6 +36,7 @@ function BookingDetailsDialog({
   onClose: () => void;
 }) {
   const { t, language } = useLanguage();
+  const badge = booking ? statusBadge(booking.status, t) : null;
   const dateLocale = language === "uk" ? ukLocale : enUS;
   const { data: hotelSettings } = useHotelSettings();
 
@@ -62,12 +68,14 @@ function BookingDetailsDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {t("archive.bookingDetails")}
-            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-destructive/10 text-destructive">
-              {t("bookings.cancelled")}
-            </span>
+            {badge && (
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${badge.cls}`}>
+                {badge.label}
+              </span>
+            )}
           </DialogTitle>
           <DialogDescription>
-            {t("archive.cancelledOn")} {format(new Date(booking.updated_at), "dd MMM yyyy", { locale: dateLocale })}
+            {format(new Date(booking.updated_at), "dd MMM yyyy", { locale: dateLocale })}
           </DialogDescription>
         </DialogHeader>
 
@@ -233,7 +241,8 @@ export default function AdminArchive() {
       <div className="space-y-4">
         {filtered && filtered.length > 0 ? (
           filtered.map((booking) => {
-            const src = sourceLabel(booking.booking_source);
+            const src   = sourceLabel(booking.booking_source);
+            const badge = statusBadge(booking.status, t);
             return (
               <Card key={booking.id} className="overflow-hidden opacity-80">
                 <CardContent className="p-0">
@@ -246,8 +255,8 @@ export default function AdminArchive() {
                             {src.label}
                           </span>
                         )}
-                        <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-destructive/10 text-destructive">
-                          {t("bookings.cancelled")}
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${badge.cls}`}>
+                          {badge.label}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground">{booking.guest_email}</p>

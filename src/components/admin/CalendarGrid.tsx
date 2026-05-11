@@ -1,9 +1,9 @@
+import { useRef, useEffect } from "react";
 import { format, parseISO, isToday, differenceInDays } from "date-fns";
 import {
   CheckCircle2, AlertTriangle, Wrench, BedDouble, BedSingle, Users,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -86,6 +86,7 @@ function bedConfigLabel(cfg: string | null, t: (k: string) => string) {
 
 interface Props {
   visibleDays: number;
+  cellWidth: number;
   days: Date[];
   roomUnits: CalendarRoomUnit[] | undefined;
   roomsByFloor: Array<[number | null, CalendarRoomUnit[]]>;
@@ -113,8 +114,11 @@ interface Props {
   onGroupBookingClick: (gb: GroupBooking) => void;
 }
 
+const EDGE_ZONE = 80;  // px from top/bottom that triggers auto-scroll
+const MAX_SPEED = 14;  // max pixels scrolled per animation frame
+
 export function CalendarGrid({
-  visibleDays, days, roomUnits, roomsByFloor,
+  visibleDays, cellWidth, days, roomUnits, roomsByFloor,
   language, t, dateLocale,
   reservationsByRoom, groupResByRoom,
   dragState, isCellOccupied, isCellInCreateSelection, isCreateSelectionValid,
@@ -124,19 +128,83 @@ export function CalendarGrid({
   handleCellMouseDown, handleCellMouseEnter, handleCellMouseUp, onClearDrag,
   onGroupBookingClick,
 }: Props) {
+  const scrollRef      = useRef<HTMLDivElement>(null);
+  const rafRef         = useRef<number | null>(null);
+  const scrollSpeedRef = useRef(0);
+  const mousePosRef    = useRef({ x: 0, y: 0 });
+  // Keep a stable ref to the latest handleCellMouseEnter so the RAF closure
+  // never holds a stale capture of that callback.
+  const mouseEnterRef  = useRef(handleCellMouseEnter);
+  useEffect(() => { mouseEnterRef.current = handleCellMouseEnter; });
+
+  useEffect(() => {
+    if (dragState?.kind !== "create") {
+      scrollSpeedRef.current = 0;
+      if (rafRef.current != null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+      return;
+    }
+
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      mousePosRef.current = { x: e.clientX, y: e.clientY };
+      const rect = container.getBoundingClientRect();
+      const relY = e.clientY - rect.top;
+      const h    = rect.height;
+
+      if (relY < EDGE_ZONE && relY >= 0) {
+        scrollSpeedRef.current = -MAX_SPEED * (1 - relY / EDGE_ZONE);
+      } else if (relY > h - EDGE_ZONE && relY <= h) {
+        scrollSpeedRef.current =  MAX_SPEED * (1 - (h - relY) / EDGE_ZONE);
+      } else {
+        scrollSpeedRef.current = 0;
+      }
+    };
+
+    const tick = () => {
+      const speed = scrollSpeedRef.current;
+      if (speed !== 0 && scrollRef.current) {
+        const before = scrollRef.current.scrollTop;
+        scrollRef.current.scrollTop += speed;
+        if (scrollRef.current.scrollTop !== before) {
+          // After the DOM scrolls, find which cell is now under the cursor and
+          // extend the selection into it, mirroring normal onMouseEnter behaviour.
+          const el   = document.elementFromPoint(mousePosRef.current.x, mousePosRef.current.y);
+          const cell = el?.closest<HTMLElement>("[data-room-unit-id]");
+          if (cell) {
+            const roomUnitId = cell.dataset.roomUnitId!;
+            const colIdx     = parseInt(cell.dataset.colIdx ?? "", 10);
+            if (!isNaN(colIdx)) mouseEnterRef.current(roomUnitId, colIdx);
+          }
+        }
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      if (rafRef.current != null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+      scrollSpeedRef.current = 0;
+    };
+  }, [dragState?.kind]);
+
   return (
     <Card>
       <CardContent className="p-0">
-        <ScrollArea className="w-full">
+        <div ref={scrollRef} className="w-full h-[calc(100vh-180px)] overflow-auto">
           <div
-            className="select-none"
-            style={{ minWidth: `${160 + visibleDays * 48}px` }}
+            className="select-none w-full"
+            style={{ minWidth: `${160 + visibleDays * cellWidth}px` }}
             onMouseLeave={() => { if (dragState?.kind === "create") onClearDrag(); }}
             onMouseUp={handleCellMouseUp}
           >
             {/* Day header row */}
-            <div className="grid border-b border-border" style={{ gridTemplateColumns: `160px repeat(${visibleDays}, 1fr)` }}>
-              <div className="p-3 border-r border-border text-sm font-medium text-muted-foreground">{t("calendar.room")}</div>
+            <div className="grid border-b-2 border-border sticky top-0 z-20 bg-card shadow-sm" style={{ gridTemplateColumns: `160px repeat(${visibleDays}, minmax(${cellWidth}px, 1fr))`, transform: 'translateZ(0)' }}>
+              <div className="p-3 border-r border-border text-sm font-medium text-muted-foreground sticky left-0 z-[1] bg-card">{t("calendar.room")}</div>
               {days.map(day => (
                 <div key={day.toISOString()} className={cn(
                   "p-2 text-center text-xs border-r border-border last:border-r-0",
@@ -154,9 +222,9 @@ export function CalendarGrid({
               <div
                 key={`floor-${floor}`}
                 className="grid border-b border-border bg-muted/60"
-                style={{ gridTemplateColumns: `160px repeat(${visibleDays}, 1fr)` }}
+                style={{ gridTemplateColumns: `160px repeat(${visibleDays}, minmax(${cellWidth}px, 1fr))` }}
               >
-                <div className="px-3 py-1.5 border-r border-border flex items-center">
+                <div className="px-3 py-1.5 border-r border-border flex items-center sticky left-0 z-[11] bg-muted">
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                     {floor !== null ? `${t("roomManager.floor")} ${floor}` : t("calendar.noFloor")}
                   </span>
@@ -174,10 +242,11 @@ export function CalendarGrid({
 
                 return (
                   <div key={unit.id} className="grid border-b border-border last:border-b-0"
-                    style={{ gridTemplateColumns: `160px repeat(${visibleDays}, 1fr)` }}>
+                    style={{ gridTemplateColumns: `160px repeat(${visibleDays}, minmax(${cellWidth}px, 1fr))` }}>
 
                     {/* Room label with cleanliness popover */}
-                    <div className={cn("p-3 border-r border-border flex flex-col justify-center", cleanCfg.bg)}>
+                    <div className="sticky left-0 z-[11] border-r border-border bg-card">
+                    <div className={cn("p-3 flex flex-col justify-center h-full", cleanCfg.bg)}>
                       <Popover
                         open={cleanlinessPopover === unit.id}
                         onOpenChange={open => setCleanlinessPopover(open ? unit.id : null)}
@@ -222,6 +291,7 @@ export function CalendarGrid({
                         </span>
                       )}
                     </div>
+                    </div>
 
                     {/* Day cells */}
                     {days.map((day, colIdx) => {
@@ -234,6 +304,8 @@ export function CalendarGrid({
                       return (
                         <div
                           key={colIdx}
+                          data-room-unit-id={unit.id}
+                          data-col-idx={String(colIdx)}
                           className={cn(
                             "min-h-14 border-r border-border last:border-r-0 relative",
                             (day.getDay() === 0 || day.getDay() === 6) && "bg-muted/20",
@@ -380,8 +452,7 @@ export function CalendarGrid({
               <div className="p-12 text-center text-muted-foreground">{t("calendar.noRooms")}</div>
             )}
           </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+        </div>
       </CardContent>
     </Card>
   );

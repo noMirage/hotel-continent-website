@@ -77,12 +77,16 @@ export function useAdminSession() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (!mounted) return;
-      if (event === "SIGNED_IN" && newSession) {
+
+      if ((event === "SIGNED_IN" || event === "TOKEN_REFRESHED") && newSession) {
         setSession(newSession);
-        const r = await fetchAdminRole(newSession.user.id);
-        if (mounted) {
-          setRole(r);
-          setIsRoleLoading(false);
+        // Only re-fetch the role on actual sign-in, not on every token refresh
+        if (event === "SIGNED_IN") {
+          const r = await fetchAdminRole(newSession.user.id);
+          if (mounted) {
+            setRole(r);
+            setIsRoleLoading(false);
+          }
         }
       }
       if (event === "SIGNED_OUT") {

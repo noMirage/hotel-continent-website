@@ -140,10 +140,15 @@ export const QK = {
   ownerMonthReservations: (monthStart: string) =>
     ["owner-month-reservations", monthStart] as const,
   ownerLast6Reservations: () => ["owner-last6-reservations"] as const,
+  ownerMonthGroupBookings: (monthStart: string) =>
+    ["owner-month-group-bookings", monthStart] as const,
+  ownerLast6GroupBookings: () => ["owner-last6-group-bookings"] as const,
   ownerRoomUnitsCount: () => ["owner-room-units-count"] as const,
 
   // ── Analytics ────────────────────────────────────────────────────────────
   analyticsReservations: (from: string, to: string) =>
     ["analytics-reservations", from, to] as const,
+  analyticsGroupBookings: (from: string, to: string) =>
+    ["analytics-group-bookings", from, to] as const,
   analyticsRoomUnits: () => ["analytics-room-units"] as const,
 };

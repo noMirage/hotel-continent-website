@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 
-// Import hotel photos
 import hotelRoom         from "@/assets/hotel-room.webp";
 import hotelHall         from "@/assets/hotel-hall.webp";
 import hotelRestaurant   from "@/assets/hotel-restaurant.webp";
@@ -15,30 +14,45 @@ import hotelFootball     from "@/assets/hotel-football.webp";
 import hotelRestaurant2  from "@/assets/hotel-restaurant-2.webp";
 import hotelDecoration   from "@/assets/hotel-decoration.webp";
 import hotelDecoration1  from "@/assets/hotel-decoration-1.webp";
+import hotelConference1  from "@/assets/hotel-conference-1.jpg";
+import hotelConference2  from "@/assets/hotel-conference-2.jpg";
+import hotelConference3  from "@/assets/hotel-conference-3.jpg";
 
-const galleryItems = [
-  { src: hotelHall,        alt: "gallery.hall",        category: "hotel" },
-  { src: hotelRoom,        alt: "gallery.deluxe",      category: "rooms" },
-  { src: hotelRestaurant,  alt: "gallery.restaurant",  category: "hotel" },
-  { src: hotelSauna,       alt: "gallery.sauna",       category: "hotel" },
-  { src: hotelPool,        alt: "gallery.pool",        category: "hotel" },
-  { src: hotelRestaurant1, alt: "gallery.restaurant2", category: "hotel" },
-  { src: hotelFootball,    alt: "gallery.football",    category: "hotel" },
-  { src: hotelRestaurant2, alt: "gallery.restaurant3", category: "hotel" },
-  { src: hotelDecoration,  alt: "gallery.decoration",  category: "hotel" },
-  { src: hotelDecoration1, alt: "gallery.decoration2", category: "hotel" },
+type Category = "restaurant" | "conference" | "leisure" | "rooms" | "hotel";
+type FilterKey = "all" | Category;
+
+const galleryItems: { src: string; alt: string; category: Category }[] = [
+  { src: hotelHall,        alt: "Hotel Hall",      category: "hotel" },
+  { src: hotelRoom,        alt: "Deluxe Room",     category: "rooms" },
+  { src: hotelRestaurant,  alt: "Restaurant",      category: "restaurant" },
+  { src: hotelSauna,       alt: "Sauna",           category: "leisure" },
+  { src: hotelPool,        alt: "Pool",            category: "leisure" },
+  { src: hotelRestaurant1, alt: "Restaurant",      category: "restaurant" },
+  { src: hotelFootball,    alt: "Football",        category: "leisure" },
+  { src: hotelRestaurant2, alt: "Restaurant",      category: "restaurant" },
+  { src: hotelDecoration,  alt: "Hotel",           category: "hotel" },
+  { src: hotelDecoration1, alt: "Hotel",           category: "hotel" },
+  { src: hotelConference1, alt: "Conference Room", category: "conference" },
+  { src: hotelConference2, alt: "Conference Room", category: "conference" },
+  { src: hotelConference3, alt: "Conference Room", category: "conference" },
 ];
 
-// Grid layout: vary sizes for visual interest
-const gridClasses = [
-  "col-span-2 row-span-2", // large
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-2", // tall
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
-  "col-span-1 row-span-1",
+const FILTERS: { key: FilterKey; labelKey: string }[] = [
+  { key: "all",        labelKey: "gallery.filterAll" },
+  { key: "restaurant", labelKey: "gallery.filterRestaurant" },
+  { key: "conference", labelKey: "gallery.filterConference" },
+  { key: "leisure",    labelKey: "gallery.filterLeisure" },
+  { key: "rooms",      labelKey: "gallery.filterRooms" },
+  { key: "hotel",      labelKey: "gallery.filterHotel" },
 ];
+
+const CATEGORY_LABEL: Record<Category, string> = {
+  restaurant: "gallery.filterRestaurant",
+  conference: "gallery.filterConference",
+  leisure:    "gallery.filterLeisure",
+  rooms:      "gallery.filterRooms",
+  hotel:      "gallery.filterHotel",
+};
 
 interface LightboxProps {
   images: typeof galleryItems;
@@ -65,12 +79,11 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: LightboxProps) {
     };
   }, [onClose, onPrev, onNext]);
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 bg-foreground/95 flex items-center justify-center"
       onClick={onClose}
     >
-      {/* Close */}
       <button
         className="absolute top-4 right-4 text-primary-foreground/80 hover:text-primary-foreground transition-colors p-2 rounded-full hover:bg-primary-foreground/10"
         onClick={onClose}
@@ -79,12 +92,10 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: LightboxProps) {
         <X className="h-7 w-7" />
       </button>
 
-      {/* Counter */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 text-sm text-primary-foreground/60 font-medium">
         {t("gallery.photo")} {index + 1} {t("gallery.of")} {images.length}
       </div>
 
-      {/* Prev */}
       <button
         className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-foreground/80 hover:text-primary-foreground transition-colors p-3 rounded-full hover:bg-primary-foreground/10"
         onClick={(e) => { e.stopPropagation(); onPrev(); }}
@@ -93,7 +104,6 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: LightboxProps) {
         <ChevronLeft className="h-8 w-8" />
       </button>
 
-      {/* Image */}
       <div className="max-w-5xl max-h-[85vh] px-20" onClick={(e) => e.stopPropagation()}>
         <img
           key={index}
@@ -104,7 +114,6 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: LightboxProps) {
         />
       </div>
 
-      {/* Next */}
       <button
         className="absolute right-4 top-1/2 -translate-y-1/2 text-primary-foreground/80 hover:text-primary-foreground transition-colors p-3 rounded-full hover:bg-primary-foreground/10"
         onClick={(e) => { e.stopPropagation(); onNext(); }}
@@ -113,12 +122,10 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: LightboxProps) {
         <ChevronRight className="h-8 w-8" />
       </button>
 
-      {/* Thumbnail strip */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 px-4">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 px-4 overflow-x-auto max-w-full">
         {images.map((img, i) => (
           <button
             key={i}
-            onClick={(e) => { e.stopPropagation(); /* handled by parent */ }}
             className={cn(
               "w-12 h-8 rounded overflow-hidden border-2 transition-all flex-shrink-0",
               i === index ? "border-primary opacity-100" : "border-transparent opacity-40 hover:opacity-70"
@@ -130,78 +137,111 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: LightboxProps) {
       </div>
 
       <style>{`@keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }`}</style>
-    </div>
+    </div>,
+    document.body
   );
 }
 
 export function GallerySection() {
   const { t } = useLanguage();
+  const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  const openLightbox = useCallback((index: number) => setLightboxIndex(index), []);
-  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
-  const prevImage = useCallback(() =>
-    setLightboxIndex(i => i !== null ? (i - 1 + galleryItems.length) % galleryItems.length : null), []);
-  const nextImage = useCallback(() =>
-    setLightboxIndex(i => i !== null ? (i + 1) % galleryItems.length : null), []);
+  const filteredItems = activeFilter === "all"
+    ? galleryItems
+    : galleryItems.filter(item => item.category === activeFilter);
 
-  // Show first 6 in grid, rest accessible via lightbox
-  const visibleItems = galleryItems.slice(0, 6);
+  const handleFilterChange = (filter: FilterKey) => {
+    setActiveFilter(filter);
+    setLightboxIndex(null);
+    carouselRef.current?.scrollTo({ left: 0, behavior: "instant" });
+  };
+
+  const closeLightbox = () => setLightboxIndex(null);
+  const prevImage = () => setLightboxIndex(i => i !== null ? (i - 1 + filteredItems.length) % filteredItems.length : null);
+  const nextImage = () => setLightboxIndex(i => i !== null ? (i + 1) % filteredItems.length : null);
+
+  const galleryCard = (item: typeof galleryItems[number], index: number, wrapperClass = "", imgClass = "h-auto") => (
+    <div
+      key={item.src + index}
+      className={cn("relative overflow-hidden rounded-xl cursor-pointer group", wrapperClass)}
+      onClick={() => setLightboxIndex(index)}
+    >
+      <img
+        src={item.src}
+        alt={item.alt}
+        loading="lazy"
+        decoding="async"
+        className={cn("w-full block transition-transform duration-500 group-hover:scale-105", imgClass)}
+      />
+      <div className="absolute bottom-3 left-3">
+        <span className="px-3 py-1 bg-foreground/60 backdrop-blur-sm text-primary-foreground text-xs font-semibold uppercase tracking-widest rounded-full">
+          {t(CATEGORY_LABEL[item.category])}
+        </span>
+      </div>
+      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/25 transition-all duration-300 flex items-center justify-center">
+        <ZoomIn className="h-8 w-8 text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-lg" />
+      </div>
+    </div>
+  );
 
   return (
     <section className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="mb-10">
           <p className="text-primary font-medium tracking-widest uppercase text-sm mb-3">
             {t("gallery.eyebrow")}
           </p>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-3">
             {t("gallery.title")}
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mb-8">
             {t("gallery.subtitle")}
           </p>
+
+          {/* Filter pills */}
+          <div className="flex flex-wrap gap-2">
+            {FILTERS.map(filter => (
+              <button
+                key={filter.key}
+                onClick={() => handleFilterChange(filter.key)}
+                className={cn(
+                  "px-5 py-2 rounded-full text-sm font-medium border transition-all duration-200",
+                  activeFilter === filter.key
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-transparent text-foreground border-border hover:border-primary hover:text-primary"
+                )}
+              >
+                {t(filter.labelKey)}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Mosaic Grid */}
-        <div className="grid grid-cols-3 md:grid-cols-4 grid-rows-3 gap-3 h-[500px] md:h-[600px]">
-          {visibleItems.map((item, index) => (
-            <div
-              key={index}
-              className={cn(
-                "relative overflow-hidden rounded-xl cursor-pointer group",
-                gridClasses[index]
-              )}
-              onClick={() => openLightbox(index)}
-            >
-              <img
-                src={item.src}
-                alt={item.alt}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              {/* Overlay on hover */}
-              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-all duration-300 flex items-center justify-center">
-                <ZoomIn className="h-8 w-8 text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-lg" />
-              </div>
-              {/* Last visible tile: show "view all" overlay */}
-              {index === 5 && galleryItems.length > 6 && (
-                <div className="absolute inset-0 bg-foreground/60 flex flex-col items-center justify-center text-primary-foreground">
-                  <span className="font-serif text-3xl font-bold">+{galleryItems.length - 5}</span>
-                  <span className="text-sm mt-1 opacity-80">{t("gallery.viewAll")}</span>
-                </div>
-              )}
-            </div>
-          ))}
+        {/* Mobile: horizontal snap carousel */}
+        <div
+          ref={carouselRef}
+          className="sm:hidden -mx-4 px-4 flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+        >
+          {filteredItems.map((item, index) =>
+            galleryCard(item, index, "snap-start shrink-0 w-[78vw] h-52", "h-full object-cover")
+          )}
+        </div>
+
+        {/* Desktop: masonry grid */}
+        <div className="hidden sm:block columns-2 lg:columns-3 xl:columns-4 gap-3">
+          {filteredItems.map((item, index) =>
+            galleryCard(item, index, "break-inside-avoid mb-3 block")
+          )}
         </div>
       </div>
 
-      {/* Lightbox */}
       {lightboxIndex !== null && (
         <Lightbox
-          images={galleryItems}
+          images={filteredItems}
           index={lightboxIndex}
           onClose={closeLightbox}
           onPrev={prevImage}

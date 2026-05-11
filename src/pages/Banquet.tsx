@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { addDays, format as dateFnsFormat } from "date-fns";
+import { uk as ukLocale, enUS } from "date-fns/locale";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,14 +9,17 @@ import { toast } from "sonner";
 import {
   Heart, Cake, Briefcase, Baby, Star, Monitor, Smile,
   UtensilsCrossed, BedDouble, Car, ChefHat, CalendarCheck, Sparkles,
-  ArrowRight, X, ZoomIn,
+  ArrowRight, X, ZoomIn, Calendar as CalendarIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { EventType } from "@/lib/supabase-types";
@@ -66,9 +70,12 @@ const GALLERY = [
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function BanquetPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const dateLocale = language === "uk" ? ukLocale : enUS;
   const location = useLocation();
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [eventDateOpen, setEventDateOpen] = useState(false);
+  const [eventDate, setEventDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     if (location.hash === "#form") {
@@ -305,8 +312,37 @@ export default function BanquetPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="event_date">{t("banquet.form.eventDate")} *</Label>
-                      <Input id="event_date" type="date" {...register("event_date")} />
+                      <Label>{t("banquet.form.eventDate")} *</Label>
+                      <Popover open={eventDateOpen} onOpenChange={setEventDateOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !eventDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                            {eventDate
+                              ? dateFnsFormat(eventDate, "d MMM yyyy", { locale: dateLocale })
+                              : t("banquet.form.pickDate")}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={eventDate}
+                            onSelect={(date) => {
+                              setEventDate(date);
+                              setValue("event_date", date ? dateFnsFormat(date, "yyyy-MM-dd") : "", { shouldValidate: true });
+                              setEventDateOpen(false);
+                            }}
+                            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                            locale={dateLocale}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                       {errors.event_date && <p className="text-xs text-destructive">{errors.event_date.message}</p>}
                     </div>
                     <div className="space-y-1.5">

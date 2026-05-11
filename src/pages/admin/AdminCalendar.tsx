@@ -28,7 +28,9 @@ import { useCalendarMutations } from "@/hooks/useCalendarMutations";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ZOOM_LEVELS = [7, 10, 14, 21] as const;
+const ZOOM_PCTS    = [50, 75, 100, 125, 150] as const;
+const VISIBLE_DAYS = 30;
+const BASE_CELL_W  = 72;
 
 const LEGEND: Array<{ labelKey: string; cls: string }> = [
   { labelKey: "calendar.unprocessed", cls: "bg-orange-500/70" },
@@ -49,8 +51,10 @@ export default function AdminCalendar() {
   const [startDate, setStartDate] = useState(() => {
     const d = new Date(); d.setHours(0, 0, 0, 0); return d;
   });
-  const [zoomIdx, setZoomIdx] = useState(2);
-  const visibleDays = ZOOM_LEVELS[zoomIdx];
+  const [zoomIdx, setZoomIdx] = useState(0);
+  const visibleDays = VISIBLE_DAYS;
+  const zoomPct     = ZOOM_PCTS[zoomIdx];
+  const cellWidth   = Math.round(BASE_CELL_W * zoomPct / 100);
 
   const [datePickerOpen,    setDatePickerOpen]    = useState(false);
   const [cleanlinessPopover, setCleanlinessPopover] = useState<string | null>(null);
@@ -175,6 +179,35 @@ export default function AdminCalendar() {
     return false;
   }, [reservationsByRoom, groupResByRoom]);
 
+  // Same as isCellOccupied but ignores late-checkout extension so that a new
+  // check-in on the same day as a late checkout is not incorrectly blocked.
+  const isCellBlockedForCheckIn = useCallback((roomUnitId: string, colIdx: number) => {
+    for (const r of reservationsByRoom.get(roomUnitId) ?? []) {
+      if (colIdx >= r.startCol && colIdx < r.startCol + r.span) return true;
+    }
+    for (const g of groupResByRoom.get(roomUnitId) ?? []) {
+      if (colIdx >= g.startCol && colIdx < g.startCol + g.span) return true;
+    }
+    return false;
+  }, [reservationsByRoom, groupResByRoom]);
+
+  // Returns true when colIdx is the check-in day of a reservation with an
+  // early check-in fee. Checking out on that day creates a real conflict
+  // (room can't be cleaned in time), so it must be blocked separately even
+  // though checkEndCol = maxCol - 1 skips the normal stay-night check.
+  const hasCellEarlyCheckin = useCallback((roomUnitId: string, colIdx: number) => {
+    for (const r of reservationsByRoom.get(roomUnitId) ?? []) {
+      if (r.startCol === colIdx && r.isActualStart && Number(r.res.early_checkin_fee) > 0) return true;
+    }
+    for (const g of groupResByRoom.get(roomUnitId) ?? []) {
+      if (g.startCol === colIdx && g.isActualStart) {
+        const ra = g.gb.room_assignments?.find(a => a.room_unit_id === roomUnitId);
+        if (ra && Number(ra.early_checkin_fee) > 0) return true;
+      }
+    }
+    return false;
+  }, [reservationsByRoom, groupResByRoom]);
+
   const isRangeAvailable = useCallback((roomUnitId: string, fromCol: number, toCol: number, excludeId?: string) => {
     for (let c = fromCol; c <= toCol; c++) {
       if (isCellOccupied(roomUnitId, c, excludeId)) return false;
@@ -246,9 +279,9 @@ export default function AdminCalendar() {
   // ── Create-drag helpers ───────────────────────────────────────────────────────
 
   const handleCellMouseDown = useCallback((roomUnitId: string, roomTypeId: string, colIdx: number) => {
-    if (isCellOccupied(roomUnitId, colIdx)) return;
+    if (isCellBlockedForCheckIn(roomUnitId, colIdx)) return;
     setDragState({ kind: "create", startRoomUnitId: roomUnitId, endRoomUnitId: roomUnitId, roomTypeId, startCol: colIdx, endCol: colIdx });
-  }, [isCellOccupied]);
+  }, [isCellBlockedForCheckIn]);
 
   const handleCellMouseEnter = useCallback((roomUnitId: string, colIdx: number) => {
     const ds = dragStateRef.current;
@@ -269,16 +302,18 @@ export default function AdminCalendar() {
     const maxIdx   = Math.max(startIdx, endIdx);
     const selected = roomUnitsList.slice(minIdx, maxIdx + 1);
 
-    if (selected.every(room => isRangeAvailable(room.id, minCol, maxCol)) && selected.length > 0) {
+    const checkEndCol = maxCol > minCol ? maxCol - 1 : maxCol;
+    const noEarlyCheckinConflict = !selected.some(room => hasCellEarlyCheckin(room.id, maxCol));
+    if (noEarlyCheckinConflict && selected.every(room => isRangeAvailable(room.id, minCol, checkEndCol)) && selected.length > 0) {
       setBookingDialog({
         open: true,
         selectedRoomUnits: selected,
         checkIn:  addDays(startDate, minCol),
-        checkOut: addDays(startDate, maxCol + 1),
+        checkOut: addDays(startDate, maxCol > minCol ? maxCol : maxCol + 1),
       });
     }
     setDragState(null);
-  }, [isRangeAvailable, startDate, roomUnitsList]);
+  }, [isRangeAvailable, hasCellEarlyCheckin, startDate, roomUnitsList]);
 
   const isCellInCreateSelection = useCallback((roomUnitId: string, colIdx: number) => {
     const ds = dragState;
@@ -299,8 +334,10 @@ export default function AdminCalendar() {
     const startIdx = roomUnitsList.findIndex(u => u.id === dragState.startRoomUnitId);
     const endIdx   = roomUnitsList.findIndex(u => u.id === dragState.endRoomUnitId);
     const selected = roomUnitsList.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
-    return selected.every(room => isRangeAvailable(room.id, minCol, maxCol));
-  }, [dragState, isRangeAvailable, roomUnitsList]);
+    const checkEndCol = maxCol > minCol ? maxCol - 1 : maxCol;
+    const noEarlyCheckinConflict = !selected.some(room => hasCellEarlyCheckin(room.id, maxCol));
+    return noEarlyCheckinConflict && selected.every(room => isRangeAvailable(room.id, minCol, checkEndCol));
+  }, [dragState, isRangeAvailable, hasCellEarlyCheckin, roomUnitsList]);
 
   // ── Move-drag ghost helpers ───────────────────────────────────────────────────
 
@@ -344,14 +381,14 @@ export default function AdminCalendar() {
           <div className="flex items-center gap-1 border rounded-md p-1">
             <Button variant="ghost" size="icon" className="h-7 w-7"
               disabled={zoomIdx === 0} onClick={() => setZoomIdx(i => Math.max(0, i - 1))}>
-              <ZoomIn className="h-4 w-4" />
+              <ZoomOut className="h-4 w-4" />
             </Button>
-            <span className="text-xs font-medium px-1 min-w-[36px] text-center">
-              {visibleDays}{t("calendar.days")}
+            <span className="text-xs font-medium px-1 min-w-[40px] text-center">
+              {zoomPct}%
             </span>
             <Button variant="ghost" size="icon" className="h-7 w-7"
-              disabled={zoomIdx === ZOOM_LEVELS.length - 1} onClick={() => setZoomIdx(i => Math.min(ZOOM_LEVELS.length - 1, i + 1))}>
-              <ZoomOut className="h-4 w-4" />
+              disabled={zoomIdx === ZOOM_PCTS.length - 1} onClick={() => setZoomIdx(i => Math.min(ZOOM_PCTS.length - 1, i + 1))}>
+              <ZoomIn className="h-4 w-4" />
             </Button>
           </div>
 
@@ -408,6 +445,7 @@ export default function AdminCalendar() {
       {/* ── Calendar grid ───────────────────────────────────────────────────── */}
       <CalendarGrid
         visibleDays={visibleDays}
+        cellWidth={cellWidth}
         days={days}
         roomUnits={roomUnits}
         roomsByFloor={roomsByFloor}
@@ -417,7 +455,7 @@ export default function AdminCalendar() {
         reservationsByRoom={reservationsByRoom}
         groupResByRoom={groupResByRoom}
         dragState={dragState}
-        isCellOccupied={isCellOccupied}
+        isCellOccupied={isCellBlockedForCheckIn}
         isCellInCreateSelection={isCellInCreateSelection}
         isCreateSelectionValid={isCreateSelectionValid}
         ghostValid={ghostValid}

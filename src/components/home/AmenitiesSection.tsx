@@ -1,10 +1,10 @@
-import { Sparkles, UtensilsCrossed, Dumbbell, Waves, Bell, Wifi } from "lucide-react";
+import { Sparkles, UtensilsCrossed, Users, Waves, Bell, Wifi } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Sparkles,
   UtensilsCrossed,
-  Dumbbell,
+  Users,
   Waves,
   Bell,
   Wifi,
@@ -13,7 +13,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 const amenityKeys = [
   { nameKey: "amenities.spa" as const, descKey: "amenities.spaDesc" as const, icon: "Sparkles" },
   { nameKey: "amenities.dining" as const, descKey: "amenities.diningDesc" as const, icon: "UtensilsCrossed" },
-  { nameKey: "amenities.fitness" as const, descKey: "amenities.fitnessDesc" as const, icon: "Dumbbell" },
+  { nameKey: "amenities.fitness" as const, descKey: "amenities.fitnessDesc" as const, icon: "Users" },
   { nameKey: "amenities.pool" as const, descKey: "amenities.poolDesc" as const, icon: "Waves" },
   { nameKey: "amenities.concierge" as const, descKey: "amenities.conciergeDesc" as const, icon: "Bell" },
   { nameKey: "amenities.wifi" as const, descKey: "amenities.wifiDesc" as const, icon: "Wifi" },

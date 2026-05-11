@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAdminSession } from "@/hooks/useAdminSession";
 import { useHotelSettings } from "@/hooks/useHotelSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -13,6 +14,7 @@ import { useAdminLogin } from "@/hooks/useAdminLogin";
 export default function AdminLoginPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +22,11 @@ export default function AdminLoginPage() {
   const { hotelName } = useHotelSettings();
 
   const { login, isLoading } = useAdminLogin({
-    onSuccess: (r) => navigate(r === "owner" ? "/admin/owner-dashboard" : "/admin/dashboard"),
+    onSuccess: (r) => {
+      // Clear any cached data from a previous session before entering the dashboard
+      queryClient.clear();
+      navigate(r === "owner" ? "/admin/owner-dashboard" : "/admin/dashboard");
+    },
   });
 
   useEffect(() => {

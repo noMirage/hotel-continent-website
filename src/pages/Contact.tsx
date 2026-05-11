@@ -12,8 +12,12 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function ContactPage() {
   const { toast } = useToast();
-  const { t } = useLanguage();
-  const { address, phone, email } = useHotelSettings();
+  const { t, language } = useLanguage();
+  const { data: hotelSettings, address: enAddress, phone, email } = useHotelSettings();
+
+  const address = language === "uk" && hotelSettings?.address_uk
+    ? hotelSettings.address_uk
+    : enAddress;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
