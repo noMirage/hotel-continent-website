@@ -42,9 +42,6 @@ export function Footer() {
               <li><Link to="/leisure" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("nav.leisure")}</Link></li>
               <li><Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.aboutUs")}</Link></li>
               <li><Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.contact")}</Link></li>
-              <li>
-                <Link to="/admin" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.adminLogin")}</Link>
-              </li>
             </ul>
           </div>
 
