@@ -13,8 +13,8 @@
 @layer base {
   :root {
     /* Dark Walnut + Amber palette */
-    --background: 30 60% 95%;        /* #faebd7 antiquewhite */
-    --foreground: 15 35% 8%;         /* #241009 dark walnut */
+    --background: 34 78% 91%;        /* #faebd7 antiquewhite — exact HSL */
+    --foreground: 16 60% 9%;         /* #241009 dark walnut — exact HSL */
 
     --card: 30 55% 96%;
     --card-foreground: 15 35% 8%;
@@ -22,10 +22,10 @@
     --popover: 30 60% 95%;
     --popover-foreground: 15 35% 8%;
 
-    --primary: 27 100% 37%;          /* #bf6e00 deep amber */
+    --primary: 35 100% 37%;          /* #bf6e00 deep amber — exact HSL */
     --primary-foreground: 30 60% 95%;
 
-    --secondary: 15 55% 18%;         /* #4a2010 mid walnut */
+    --secondary: 17 64% 18%;         /* #4a2010 mid walnut — exact HSL */
     --secondary-foreground: 30 60% 95%;
 
     --muted: 28 30% 85%;
@@ -82,7 +82,7 @@
     --card-foreground: 30 60% 93%;
     --popover: 15 35% 12%;
     --popover-foreground: 30 60% 93%;
-    --primary: 27 100% 48%;
+    --primary: 35 100% 48%;
     --primary-foreground: 15 35% 6%;
     --secondary: 15 40% 22%;
     --secondary-foreground: 30 60% 93%;
