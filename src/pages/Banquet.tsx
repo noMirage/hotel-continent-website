@@ -44,16 +44,16 @@ const EVENT_TYPES: Array<{ key: EventType; icon: React.ElementType; bg: string; 
   { key: "birthday",    icon: Cake,       bg: "bg-yellow-50",  iconColor: "text-yellow-500" },
   { key: "corporate",   icon: Briefcase,  bg: "bg-blue-50",    iconColor: "text-blue-500" },
   { key: "christening", icon: Baby,       bg: "bg-sky-50",     iconColor: "text-sky-500" },
-  { key: "anniversary", icon: Star,       bg: "bg-amber-50",   iconColor: "text-amber-500" },
+  { key: "anniversary", icon: Star,       bg: "bg-primary/10", iconColor: "text-primary" },
   { key: "conference",  icon: Monitor,    bg: "bg-slate-50",   iconColor: "text-slate-500" },
-  { key: "kids_party",  icon: Smile,      bg: "bg-green-50",   iconColor: "text-green-500" },
+  { key: "kids_party",  icon: Smile,      bg: "bg-accent",     iconColor: "text-accent-foreground" },
 ];
 
 const ADVANTAGES: Array<{ key: string; icon: React.ElementType; color: string }> = [
   { key: "hall",          icon: Sparkles,        color: "bg-primary/10 text-primary" },
   { key: "kitchen",       icon: UtensilsCrossed, color: "bg-orange-100 text-orange-600" },
   { key: "accommodation", icon: BedDouble,       color: "bg-indigo-100 text-indigo-600" },
-  { key: "parking",       icon: Car,             color: "bg-stone-100 text-stone-600" },
+  { key: "parking",       icon: Car,             color: "bg-muted text-muted-foreground" },
   { key: "menu",          icon: ChefHat,         color: "bg-emerald-100 text-emerald-600" },
   { key: "planning",      icon: CalendarCheck,   color: "bg-violet-100 text-violet-600" },
 ];
@@ -144,16 +144,16 @@ export default function BanquetPage() {
           className="absolute inset-0 w-full h-full object-cover"
         />
         {/* Dark gradient from bottom */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-foreground/10" />
 
         <div className="relative container mx-auto px-4 pb-14 md:pb-20">
           <p className="text-primary font-medium tracking-widest uppercase text-xs mb-3">
             {t("banquet.hero.eyebrow")}
           </p>
-          <h1 className="font-serif text-4xl md:text-6xl font-bold text-white mb-4 max-w-2xl leading-tight">
+          <h1 className="font-serif text-4xl md:text-6xl font-bold text-primary-foreground mb-4 max-w-2xl leading-tight">
             {t("banquet.hero.title")}
           </h1>
-          <p className="text-white/70 text-base md:text-lg max-w-xl mb-8 leading-relaxed">
+          <p className="text-primary-foreground/70 text-base md:text-lg max-w-xl mb-8 leading-relaxed">
             {t("banquet.hero.subtitle")}
           </p>
           <Button size="lg" asChild className="text-sm px-7 gap-2">
@@ -166,13 +166,13 @@ export default function BanquetPage() {
       </section>
 
       {/* ── Gallery ── */}
-      <section className="py-16 md:py-20 bg-stone-900">
+      <section className="py-16 md:py-20 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <p className="text-primary/70 font-medium tracking-widest uppercase text-xs mb-2">
               {t("banquet.gallery.eyebrow")}
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white">
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-secondary-foreground">
               {t("banquet.gallery.title")}
             </h2>
           </div>
@@ -193,8 +193,8 @@ export default function BanquetPage() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 {/* Hover overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                  <ZoomIn className="h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
+                <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
+                  <ZoomIn className="h-7 w-7 text-secondary-foreground opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                 </div>
               </button>
             ))}
@@ -400,11 +400,11 @@ export default function BanquetPage() {
       {/* ── Lightbox ── */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 bg-black/92 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-foreground/95 flex items-center justify-center p-4"
           onClick={() => setLightbox(null)}
         >
           <button
-            className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="absolute top-5 right-5 p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-colors"
             onClick={() => setLightbox(null)}
           >
             <X className="h-6 w-6" />

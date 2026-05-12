@@ -391,7 +391,7 @@ function RoomCard({
       <div className="relative h-48 overflow-hidden">
         <img src={imgSrc} alt={localName(room)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent" />
-        <div className="absolute top-3 right-3 bg-green-500/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+        <div className="absolute top-3 right-3 bg-accent text-accent-foreground text-xs font-semibold px-2.5 py-1 rounded-full">
           {t("search.unitsAvailable", { n: String(room.availableCount) })}
         </div>
       </div>

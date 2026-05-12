@@ -51,13 +51,13 @@ export default function ContactPage() {
           alt="Carpathian landscape"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/30 to-transparent" />
         <div className="relative container mx-auto px-4 pb-10">
           <FadeIn direction="up">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-3">
+            <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary-foreground mb-3">
               {t("contact.title")}
             </h1>
-            <p className="text-lg text-white/80 max-w-2xl">{t("contact.subtitle")}</p>
+            <p className="text-lg text-primary-foreground/80 max-w-2xl">{t("contact.subtitle")}</p>
           </FadeIn>
         </div>
       </section>

@@ -59,14 +59,14 @@ export function RoomPhotoCarousel({ roomTypeId, fallbackSrc, alt, className }: R
         <>
           <button
             onClick={e => { e.preventDefault(); prev(); }}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 text-primary-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-foreground/60"
             aria-label="Previous photo"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={e => { e.preventDefault(); next(); }}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 text-primary-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-foreground/60"
             aria-label="Next photo"
           >
             <ChevronRight className="h-4 w-4" />
@@ -78,7 +78,7 @@ export function RoomPhotoCarousel({ roomTypeId, fallbackSrc, alt, className }: R
                 onClick={e => { e.preventDefault(); setCurrent(idx); }}
                 className={cn(
                   "w-1.5 h-1.5 rounded-full transition-all",
-                  idx === current ? "bg-white scale-125" : "bg-white/50"
+                  idx === current ? "bg-primary-foreground scale-125" : "bg-primary-foreground/50"
                 )}
                 aria-label={`Photo ${idx + 1}`}
               />

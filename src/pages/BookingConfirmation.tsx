@@ -35,8 +35,8 @@ export default function BookingConfirmationPage() {
       <div className="container mx-auto px-4 max-w-2xl">
         <Card className="text-center">
           <CardContent className="p-8 md:p-12">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-accent flex items-center justify-center">
+              <CheckCircle className="h-10 w-10 text-accent-foreground" />
             </div>
             
             <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">

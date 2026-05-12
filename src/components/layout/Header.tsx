@@ -36,7 +36,7 @@ export function Header() {
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
       isHome && !scrolled
-        ? "bg-gradient-to-b from-black/50 to-transparent border-transparent"
+        ? "bg-gradient-to-b from-foreground/60 to-transparent border-transparent"
         : "bg-card/95 backdrop-blur-sm border-b border-border"
     )}>
       <div className="container mx-auto px-4">
@@ -60,7 +60,7 @@ export function Header() {
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-primary",
                   isHome && !scrolled
-                    ? location.pathname === link.href ? "text-white" : "text-white/80 hover:text-white"
+                    ? location.pathname === link.href ? "text-primary-foreground" : "text-primary-foreground/80 hover:text-primary-foreground"
                     : location.pathname === link.href ? "text-primary" : "text-muted-foreground"
                 )}
               >
@@ -77,15 +77,15 @@ export function Header() {
               aria-label="Switch language"
               title={language === "en" ? "Switch to Ukrainian" : "Switch to English"}
             >
-              <span className={cn("font-semibold transition-colors", isHome && !scrolled ? (language === "en" ? "text-white" : "text-white/60") : (language === "en" ? "text-primary" : "text-muted-foreground"))}>EN</span>
-              <span className={isHome && !scrolled ? "text-white/30" : "text-muted-foreground/40"}>|</span>
-              <span className={cn("font-semibold transition-colors", isHome && !scrolled ? (language === "uk" ? "text-white" : "text-white/60") : (language === "uk" ? "text-primary" : "text-muted-foreground"))}>УК</span>
+              <span className={cn("font-semibold transition-colors", isHome && !scrolled ? (language === "en" ? "text-primary-foreground" : "text-primary-foreground/60") : (language === "en" ? "text-primary" : "text-muted-foreground"))}>EN</span>
+              <span className={isHome && !scrolled ? "text-primary-foreground/30" : "text-muted-foreground/40"}>|</span>
+              <span className={cn("font-semibold transition-colors", isHome && !scrolled ? (language === "uk" ? "text-primary-foreground" : "text-primary-foreground/60") : (language === "uk" ? "text-primary" : "text-muted-foreground"))}>УК</span>
             </button>
             <a
               href={`tel:${hotelPhone}`}
               className={cn(
               "flex items-center gap-2 text-sm transition-colors",
-              isHome && !scrolled ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"
+              isHome && !scrolled ? "text-primary-foreground/80 hover:text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             )}
             >
               <Phone className="h-4 w-4" />

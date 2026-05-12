@@ -56,13 +56,13 @@ export default function RoomsPage() {
       {/* Hero Banner */}
       <section className="relative h-[45vh] min-h-[320px] flex items-end overflow-hidden">
         <img src={roomHero} alt="Hotel Continent" fetchPriority="high" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
         <div className="relative container mx-auto px-4 pb-10">
           <FadeIn direction="up">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-3">
+            <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary-foreground mb-3">
               {t("rooms.title")}
             </h1>
-            <p className="text-lg text-white/80 max-w-2xl">
+            <p className="text-lg text-primary-foreground/80 max-w-2xl">
               {t("rooms.subtitle")} {hotelName}
             </p>
           </FadeIn>

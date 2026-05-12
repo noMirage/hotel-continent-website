@@ -90,7 +90,7 @@ export function AvailabilitySearchWidget({ onSearch }: Props) {
   const totalChildren = rooms.reduce((s, r) => s + r.children, 0);
 
   return (
-    <div className="bg-white/95 dark:bg-card/95 backdrop-blur-md rounded-2xl shadow-2xl border border-border/30 p-4 md:p-6">
+    <div className="bg-card/95 backdrop-blur-md rounded-2xl shadow-2xl border border-border/30 p-4 md:p-6">
 
       {/* Date row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
@@ -212,7 +212,7 @@ export function AvailabilitySearchWidget({ onSearch }: Props) {
                           {ageOptions.map(age => (
                             <SelectItem key={age} value={String(age)}>
                               {age === 0 ? t("search.under1") : `${age} ${t("search.years")}`}
-                              {age < 5 && <span className="ml-1 text-xs text-green-600 font-medium">✓</span>}
+                              {age < 5 && <span className="ml-1 text-xs text-primary font-medium">✓</span>}
                             </SelectItem>
                           ))}
                         </SelectContent>

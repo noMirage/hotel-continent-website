@@ -57,15 +57,15 @@ export default function LeisurePage() {
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
         <div className="relative container mx-auto px-4 pb-14">
           <p className="text-primary font-medium tracking-widest uppercase text-sm mb-3">
             {t("leisure.eyebrow")}
           </p>
-          <h1 className="font-serif text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
+          <h1 className="font-serif text-4xl md:text-6xl font-bold text-primary-foreground mb-4 leading-tight">
             {t("leisure.title")}
           </h1>
-          <p className="text-lg text-white/75 max-w-2xl leading-relaxed">
+          <p className="text-lg text-primary-foreground/75 max-w-2xl leading-relaxed">
             {t("leisure.subtitle")}
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function LeisurePage() {
                       decoding="async"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 to-transparent" />
                   </div>
 
                   {/* Content */}
@@ -126,7 +126,7 @@ export default function LeisurePage() {
       </section>
 
       {/* Entertainment strip */}
-      <section className="py-16 md:py-20 bg-stone-900">
+      <section className="py-16 md:py-20 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
@@ -135,10 +135,10 @@ export default function LeisurePage() {
               <p className="text-primary font-medium tracking-widest uppercase text-xs mb-4">
                 {t("leisure.entertainment.eyebrow")}
               </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-5 leading-tight">
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-secondary-foreground mb-5 leading-tight">
                 {t("leisure.entertainment.title")}
               </h2>
-              <p className="text-stone-300 text-base md:text-lg leading-relaxed mb-8 max-w-md">
+              <p className="text-secondary-foreground/70 text-base md:text-lg leading-relaxed mb-8 max-w-md">
                 {t("leisure.entertainment.desc")}
               </p>
             </div>
@@ -152,7 +152,7 @@ export default function LeisurePage() {
                 decoding="async"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/10" />
+              <div className="absolute inset-0 bg-foreground/10" />
             </div>
           </div>
         </div>

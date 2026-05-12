@@ -34,9 +34,9 @@ const ANIM_STYLES = `
   100% { transform: scale(1)   rotate(0deg); opacity: 1; }
 }
 @keyframes discountBadgeRing {
-  0%   { box-shadow: 0 0 0 0px rgba(217,119,6,0.65); }
-  70%  { box-shadow: 0 0 0 9px rgba(217,119,6,0);    }
-  100% { box-shadow: 0 0 0 0px rgba(217,119,6,0);    }
+  0%   { box-shadow: 0 0 0 0px hsl(var(--primary) / 0.65); }
+  70%  { box-shadow: 0 0 0 9px hsl(var(--primary) / 0);    }
+  100% { box-shadow: 0 0 0 0px hsl(var(--primary) / 0);    }
 }
 @keyframes discountTextPulse {
   0%,100% { transform: scale(1);    }
@@ -110,7 +110,7 @@ function PromotionCard({
         {/* Discount badge — whole badge pulses with ring + text scales */}
         {hasDiscount && (
           <div
-            className="discount-badge-ring absolute top-4 right-4 z-10 bg-amber-500 text-white font-bold text-sm leading-none px-3 py-2 rounded-full shadow-lg"
+            className="discount-badge-ring absolute top-4 right-4 z-10 bg-primary text-primary-foreground font-bold text-sm leading-none px-3 py-2 rounded-full shadow-lg"
             style={{ animationDelay: `${animDelay + 200}ms` }}
           >
             −<span className="discount-pct">{promo.discount_percent}%</span>
@@ -128,7 +128,7 @@ function PromotionCard({
               )}
               <CardTitle className="font-serif text-xl text-foreground leading-tight">{title}</CardTitle>
               {hasDiscount && (
-                <p className="text-xs text-amber-600 font-medium mt-1">
+                <p className="text-xs text-primary font-medium mt-1">
                   {lang === "uk"
                     ? `Знижка ${promo.discount_percent}% на проживання`
                     : `${promo.discount_percent}% off accommodation`}
@@ -367,7 +367,7 @@ export function PromotionsSection() {
             </DialogTitle>
             <DialogDescription>
               {activePromo && activePromo.discount_percent > 0 && (
-                <span className="inline-flex items-center gap-1 text-amber-600 font-medium text-sm mr-1.5">
+                <span className="inline-flex items-center gap-1 text-primary font-medium text-sm mr-1.5">
                   −{activePromo.discount_percent}%
                   {lang === "uk" ? " на проживання" : " off accommodation"} ·
                 </span>

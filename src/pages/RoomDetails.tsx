@@ -403,8 +403,8 @@ export default function RoomDetailsPage() {
                           : noRoomsAtAll
                             ? "bg-destructive/10 text-destructive"
                             : notEnoughRooms
-                              ? "bg-amber-50 text-amber-800 border border-amber-200"
-                              : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                              ? "bg-accent text-accent-foreground border border-border"
+                              : "bg-accent text-accent-foreground"
                       )}>
                         {isCheckingAvailability ? (
                           <span className="flex items-center gap-2">

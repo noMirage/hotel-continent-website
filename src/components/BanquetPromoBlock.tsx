@@ -5,10 +5,10 @@ import { Heart, Cake, Briefcase, Star, ArrowRight, X } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const EVENT_CHIPS = [
-  { icon: Heart,    colorBg: "bg-rose-500/20",   colorText: "text-rose-200",   key: "wedding" },
-  { icon: Cake,     colorBg: "bg-yellow-500/20",  colorText: "text-yellow-200", key: "birthday" },
-  { icon: Briefcase,colorBg: "bg-blue-500/20",    colorText: "text-blue-200",   key: "corporate" },
-  { icon: Star,     colorBg: "bg-amber-500/20",   colorText: "text-amber-200",  key: "anniversary" },
+  { icon: Heart,    colorBg: "bg-primary/15",  colorText: "text-primary-foreground/80", key: "wedding" },
+  { icon: Cake,     colorBg: "bg-accent",       colorText: "text-accent-foreground",     key: "birthday" },
+  { icon: Briefcase,colorBg: "bg-muted",        colorText: "text-muted-foreground",      key: "corporate" },
+  { icon: Star,     colorBg: "bg-primary/10",   colorText: "text-primary",               key: "anniversary" },
 ];
 
 const PHOTOS = [
@@ -24,7 +24,7 @@ export function BanquetPromoBlock() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-stone-900">
+      <section className="relative overflow-hidden bg-secondary">
         <div className="grid lg:grid-cols-2 min-h-[520px]">
 
           {/* ── Left: content ── */}
@@ -37,11 +37,11 @@ export function BanquetPromoBlock() {
                 {t("banquet.promo.eyebrow")}
               </p>
 
-              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
+              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-secondary-foreground mb-5 leading-tight">
                 {t("banquet.promo.heading")}
               </h2>
 
-              <p className="text-stone-300 text-base md:text-lg mb-8 max-w-md leading-relaxed">
+              <p className="text-secondary-foreground/70 text-base md:text-lg mb-8 max-w-md leading-relaxed">
                 {t("banquet.promo.subheading")}
               </p>
 
@@ -50,13 +50,13 @@ export function BanquetPromoBlock() {
                 {EVENT_CHIPS.map(({ icon: Icon, colorBg, colorText, key }) => (
                   <span
                     key={key}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-white/10 ${colorBg} ${colorText}`}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-secondary-foreground/10 ${colorBg} ${colorText}`}
                   >
                     <Icon className="h-3 w-3" />
                     {t(`banquet.eventType.${key}`)}
                   </span>
                 ))}
-                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border border-white/10 bg-white/10 text-stone-300">
+                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border border-secondary-foreground/10 bg-secondary-foreground/10 text-secondary-foreground/70">
                   {t("banquet.promo.andMore")}
                 </span>
               </div>
@@ -72,7 +72,7 @@ export function BanquetPromoBlock() {
                   size="lg"
                   variant="outline"
                   asChild
-                  className="text-sm px-7 border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent"
+                  className="text-sm px-7 border-secondary-foreground/20 text-secondary-foreground hover:bg-secondary-foreground/10 hover:text-secondary-foreground bg-transparent"
                 >
                   <Link to="/banquet">{t("banquet.promo.learnMore")}</Link>
                 </Button>
@@ -96,11 +96,11 @@ export function BanquetPromoBlock() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   style={{ minHeight: 0 }}
                 />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                <div className="absolute inset-0 bg-foreground/20 group-hover:bg-foreground/10 transition-colors" />
               </button>
             ))}
             {/* Vertical fade overlay on left edge blending into content panel */}
-            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-stone-900 to-transparent pointer-events-none" />
+            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-secondary to-transparent pointer-events-none" />
           </div>
         </div>
 
@@ -113,18 +113,18 @@ export function BanquetPromoBlock() {
             decoding="async"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/30 to-transparent" />
         </div>
       </section>
 
       {/* ── Lightbox ── */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-foreground/95 flex items-center justify-center p-4"
           onClick={() => setLightbox(null)}
         >
           <button
-            className="absolute top-4 right-4 text-white/80 hover:text-white"
+            className="absolute top-4 right-4 text-secondary-foreground/80 hover:text-secondary-foreground"
             onClick={() => setLightbox(null)}
           >
             <X className="h-8 w-8" />

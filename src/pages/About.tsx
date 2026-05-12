@@ -28,13 +28,13 @@ export default function AboutPage() {
       {/* Hero */}
       <section className="relative h-[55vh] min-h-[420px] flex items-end overflow-hidden">
         <img src={heroImage} alt={hotelName} className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
         <div className="relative container mx-auto px-4 pb-12">
           <FadeIn direction="up">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-3">
+            <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary-foreground mb-3">
               {t("about.title")} {hotelName}
             </h1>
-            <p className="text-lg text-white/80 max-w-2xl">{t("hotel.tagline")}</p>
+            <p className="text-lg text-primary-foreground/80 max-w-2xl">{t("hotel.tagline")}</p>
           </FadeIn>
         </div>
       </section>
@@ -66,7 +66,7 @@ export default function AboutPage() {
                   alt={t("about.photoAlt")}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/10" />
+                <div className="absolute inset-0 bg-foreground/10" />
               </div>
             </FadeIn>
             <FadeIn direction="right">
