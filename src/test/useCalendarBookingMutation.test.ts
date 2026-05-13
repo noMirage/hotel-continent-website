@@ -98,6 +98,7 @@ const DETAILS_INPUT = {
   checkOut:          new Date("2025-06-05"),
   specialRequests:   "",
   adminNotes:        "",
+  depositAmount:     "",
   earlyCheckinFee:   "0",
   lateCheckoutFee:   "0",
   promotionId:       "",

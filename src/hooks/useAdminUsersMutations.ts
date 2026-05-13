@@ -49,15 +49,22 @@ export function useAdminUsersMutations({
       }
     },
     onError: (error: Error) => {
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });
 
   const updateRoleMutation = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
-      const { error } = await supabase.from("user_roles").update({ role }).eq("user_id", userId);
+      // Use the SECURITY DEFINER RPC so the caller's permission is enforced
+      // server-side. The direct .update() path bypasses that check and silently
+      // fails for super_admin callers (whose RLS only covers owner).
+      const { data, error } = await supabase.rpc("update_role_by_user_id", {
+        p_user_id: userId,
+        p_role: role,
+      });
       if (error) throw error;
+      if (data !== "SUCCESS") throw new Error(data as string);
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: QK.adminUsers() }); },
     onError: () => { toast({ title: t("common.error"), description: "Failed to update role.", variant: "destructive" }); },

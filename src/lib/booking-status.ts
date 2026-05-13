@@ -1,3 +1,9 @@
+export const BLOCKING_STATUSES = ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN"] as const;
+export type BlockingStatus = typeof BLOCKING_STATUSES[number];
+
+export const CALENDAR_STATUSES = ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN", "CHECK_OUT"] as const;
+export type CalendarStatus = typeof CALENDAR_STATUSES[number];
+
 export function statusBadgeClass(status: string): string {
   switch (status) {
     case "UNPROCESSED": return "bg-orange-100 text-orange-800";

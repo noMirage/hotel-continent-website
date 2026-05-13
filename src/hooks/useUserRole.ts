@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { AppRole } from "@/lib/supabase-types";
 import { QK } from "@/lib/queryKeys";
+import { DEFAULT_COMMISSION_RATE } from "@/lib/constants";
 
 interface UserRole {
   role: AppRole;
@@ -80,7 +81,7 @@ export function useCurrentUserProfile() {
         fullName: profile?.full_name ?? null,
         email: user.email ?? null,
         role: (roleRow?.role ?? "admin") as AppRole,
-        commissionRate: profile?.commission_rate ?? 3,
+        commissionRate: profile?.commission_rate ?? DEFAULT_COMMISSION_RATE,
       };
     },
     staleTime: 60 * 1000,

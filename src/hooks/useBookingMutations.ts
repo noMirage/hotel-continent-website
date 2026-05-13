@@ -46,7 +46,7 @@ export function useBookingMutations({ onStatusUpdated, onDeleted }: BookingMutat
       onStatusUpdated?.();
     },
     onError: (error: Error) => {
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });
@@ -64,7 +64,7 @@ export function useBookingMutations({ onStatusUpdated, onDeleted }: BookingMutat
       onDeleted?.();
     },
     onError: (error: Error) => {
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });
@@ -83,7 +83,7 @@ export function useBookingMutations({ onStatusUpdated, onDeleted }: BookingMutat
       toast({ title: t("bookings.updated"), description: t("bookings.updatedDesc") });
     },
     onError: (error: Error) => {
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });
@@ -113,7 +113,7 @@ export function useBookingMutations({ onStatusUpdated, onDeleted }: BookingMutat
       toast({ title: t("bookings.updated"), description: t("bookings.updatedDesc") });
     },
     onError: (error: Error) => {
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });

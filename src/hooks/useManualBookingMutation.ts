@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getConflictingRooms } from "@/lib/booking-conflicts";
 import type { BookingStatus } from "@/lib/supabase-types";
+import { DEFAULT_COMMISSION_RATE } from "@/lib/constants";
 
 export interface CreateManualBookingInput {
   guestName: string;
@@ -43,7 +44,7 @@ export function useManualBookingMutation({ onBookingCreated }: Callbacks) {
 
       const { data: profile } = await supabase
         .from("profiles").select("commission_rate").eq("user_id", user.id).maybeSingle();
-      const commissionRate = profile?.commission_rate || 3.0;
+      const commissionRate = profile?.commission_rate || DEFAULT_COMMISSION_RATE;
 
       const ciStr = format(checkInDate, "yyyy-MM-dd");
       const coStr = format(checkOutDate, "yyyy-MM-dd");
@@ -83,7 +84,7 @@ export function useManualBookingMutation({ onBookingCreated }: Callbacks) {
       onBookingCreated();
     },
     onError: (e: Error) => {
-      console.error(e);
+      if (import.meta.env.DEV) console.error(e);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });

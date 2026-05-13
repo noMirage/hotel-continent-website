@@ -84,7 +84,7 @@ export function useAdminRoomsMutations({ onSaveSuccess }: Callbacks) {
       onSaveSuccess();
     },
     onError: (error: Error) => {
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });
@@ -100,7 +100,7 @@ export function useAdminRoomsMutations({ onSaveSuccess }: Callbacks) {
       toast({ title: t("adminRooms.roomDeleted"), description: t("adminRooms.roomRemoved") });
     },
     onError: (error: Error) => {
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });

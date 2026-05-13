@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { getConflictingRooms } from "@/lib/booking-conflicts";
+import { BLOCKING_STATUSES } from "@/lib/booking-status";
 import { hotelConfig } from "@/config/hotel";
 import { getEffectivePrice } from "@/lib/room-pricing";
 import type { RoomTypeGuestPrice } from "@/lib/supabase-types";
@@ -99,7 +101,7 @@ function useAvailabilitySearch(params: SearchParams | null) {
       const { data: booked } = await supabase
         .from("reservations")
         .select("room_unit_id")
-        .in("status", ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN"])
+        .in("status", BLOCKING_STATUSES as unknown as string[])
         .or(`and(check_in_date.lt.${coStr},check_out_date.gt.${ciStr})`);
       const bookedIds = new Set((booked ?? []).map((r: any) => r.room_unit_id));
 
@@ -482,7 +484,7 @@ function BookPackageModal({
       const { data: booked } = await supabase
         .from("reservations")
         .select("room_unit_id")
-        .in("status", ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN"])
+        .in("status", BLOCKING_STATUSES as unknown as string[])
         .or(`and(check_in_date.lt.${coStr},check_out_date.gt.${ciStr})`);
       const bookedIds = new Set((booked ?? []).map((r: any) => r.room_unit_id));
 
@@ -513,11 +515,20 @@ function BookPackageModal({
       // One group ID links all reservations in this package together
       const packageGroupId = crypto.randomUUID();
 
-      // Insert one reservation per package room
+      // Insert one reservation per package room, with per-room conflict check
+      const insertedIds: string[] = [];
       for (const { unitId, guests, roomType } of assignments) {
+        const conflicts = await getConflictingRooms([unitId], ciStr, coStr);
+        if (conflicts.length > 0) {
+          // Roll back any reservations already inserted in this batch
+          if (insertedIds.length > 0) {
+            await supabase.from("reservations").delete().in("id", insertedIds);
+          }
+          throw new Error(t("booking.conflictError") || "One or more rooms became unavailable. Please search again.");
+        }
         const prices = allGuestPrices.filter(p => p.room_type_id === roomType.id);
         const roomPrice = getEffectivePrice(prices, guests, roomType.base_price) * nights;
-        const { error } = await supabase.from("reservations").insert({
+        const { data: inserted, error } = await supabase.from("reservations").insert({
           room_unit_id: unitId,
           guest_name: name.trim(),
           guest_email: email.trim() || "",
@@ -529,14 +540,20 @@ function BookPackageModal({
           special_requests: requests.trim() || null,
           status: "UNPROCESSED",
           booking_group_id: packageGroupId,
-        });
-        if (error) throw error;
+        }).select("id").single();
+        if (error) {
+          if (insertedIds.length > 0) {
+            await supabase.from("reservations").delete().in("id", insertedIds);
+          }
+          throw error;
+        }
+        if (inserted?.id) insertedIds.push(inserted.id);
       }
 
       const roomNames = pkg.map(p => localName(p.roomType)).join(", ");
       navigate(`/booking-confirmation?room=${encodeURIComponent(roomNames)}&checkIn=${ciStr}&checkOut=${coStr}&total=${pkgTotal}`);
     } catch (err: any) {
-      console.error(err);
+      if (import.meta.env.DEV) console.error(err);
       toast({ title: t("roomDetails.bookingFailed"), description: t("roomDetails.tryAgain"), variant: "destructive" });
     } finally {
       setSubmitting(false);

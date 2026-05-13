@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import type { Reservation, RoomUnit, GroupBooking } from "@/lib/supabase-types";
+import { CALENDAR_STATUSES } from "@/lib/booking-status";
 
 export type CalendarRoomUnit = RoomUnit & {
   room_type: { name: string; name_uk?: string | null; max_guests: number };
@@ -37,7 +38,7 @@ export function useCalendarReservations(startDate: Date, endDate: Date) {
       const { data, error } = await supabase
         .from("reservations")
         .select("*")
-        .in("status", ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN", "CHECK_OUT"])
+        .in("status", CALENDAR_STATUSES as unknown as string[])
         .lte("check_in_date", e)
         .gte("check_out_date", s);
       if (error) throw error;

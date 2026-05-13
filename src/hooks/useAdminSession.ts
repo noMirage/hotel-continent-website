@@ -11,9 +11,9 @@ const STORAGE_KEY  = `sb-${PROJECT_REF}-auth-token`;
 /**
  * Read the stored session from localStorage synchronously.
  * Returns null if absent, unparseable, or clearly expired.
- * This lets the layout skip the skeleton on hard refresh when the user
- * was already logged in — we know optimistically they have a session even
- * before the async getSession() / fetchAdminRole() round-trips complete.
+ * Used in tests; the hook no longer uses this to initialise isLoading
+ * because an optimistic render would briefly expose admin content to
+ * users whose session has been server-side revoked.
  */
 export function readStoredSession(): Session | null {
   try {
@@ -41,13 +41,12 @@ async function fetchAdminRole(userId: string): Promise<AppRole | null> {
 }
 
 export function useAdminSession() {
-  // Initialise from localStorage so AdminLayout skips the skeleton when a
-  // valid stored session is present. The async init() always runs to verify
-  // the token and fetch the role; it will redirect to login if the session
-  // turns out to be expired or the role is missing.
-  const [session, setSession]       = useState<Session | null>(readStoredSession);
+  // Always start in loading state so AdminLayout never renders admin content
+  // before the server confirms the session is valid. A revoked or expired
+  // token in localStorage would otherwise briefly expose the admin UI.
+  const [session, setSession]       = useState<Session | null>(null);
   const [role, setRole]             = useState<AppRole | null>(null);
-  const [isLoading, setIsLoading]   = useState<boolean>(() => !readStoredSession());
+  const [isLoading, setIsLoading]   = useState(true);
   const [isRoleLoading, setIsRoleLoading] = useState(true);
 
   useEffect(() => {

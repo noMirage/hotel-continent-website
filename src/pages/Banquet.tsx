@@ -126,7 +126,7 @@ export default function BanquetPage() {
       has_decor:         false,
       has_music:         false,
     });
-    if (error) { console.error(error); toast.error(t("banquet.form.errorTitle"), { description: t("common.unexpectedError") }); return; }
+    if (error) { if (import.meta.env.DEV) console.error(error); toast.error(t("banquet.form.errorTitle"), { description: t("common.unexpectedError") }); return; }
     toast.success(t("banquet.form.successTitle"), { description: t("banquet.form.successDesc") });
     reset();
   }

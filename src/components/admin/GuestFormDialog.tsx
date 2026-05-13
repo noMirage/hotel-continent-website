@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import type { Reservation, GuestForm } from "@/lib/supabase-types";
 import { useHotelSettings } from "@/hooks/useHotelSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { DEPOSIT_RATIO } from "@/lib/constants";
 
 // ─── Countries ────────────────────────────────────────────────────────────────
 
@@ -442,7 +443,7 @@ export function GuestFormDialog({ open, onOpenChange, reservation, existingForm,
             {form.ubk.trim() !== "" && (
               <p className="text-xs font-medium text-green-600">
                 {t("guestForm.discountPreview")}:{" "}
-                {(reservation.total_price * 0.8).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {(reservation.total_price * DEPOSIT_RATIO).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 {" "}(-20%)
               </p>
             )}

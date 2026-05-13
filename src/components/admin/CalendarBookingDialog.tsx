@@ -19,7 +19,7 @@ import { hotelConfig } from "@/config/hotel";
 import { cn } from "@/lib/utils";
 import { QK } from "@/lib/queryKeys";
 import type { Reservation, BookingStatus, GuestForm } from "@/lib/supabase-types";
-import { statusBadgeClass } from "@/lib/booking-status";
+import { statusBadgeClass, BLOCKING_STATUSES } from "@/lib/booking-status";
 import { useBookingAdminProfile } from "@/hooks/useBookingAdminProfile";
 import { useCalendarBookingMutation } from "@/hooks/useCalendarBookingMutation";
 import { GuestFormDialog } from "@/components/admin/GuestFormDialog";
@@ -141,7 +141,7 @@ export function CalendarBookingDialog({
         .from("reservations")
         .select("room_unit_id")
         .neq("id", reservation!.id)
-        .in("status", ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN"])
+        .in("status", BLOCKING_STATUSES as unknown as string[])
         .lt("check_in_date", editCoStr!)
         .gt("check_out_date", editCiStr!);
       if (error) throw error;

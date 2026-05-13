@@ -58,7 +58,7 @@ export function RoomPhotosDialog({ open, onOpenChange, roomTypeId, roomName }: R
       queryClient.invalidateQueries({ queryKey: QK.roomPhotos(roomTypeId) });
       toast({ title: t("adminRooms.photoDeleted") });
     },
-    onError: (err: any) => { console.error(err); toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" }); },
+    onError: (err: any) => { if (import.meta.env.DEV) console.error(err); toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" }); },
   });
 
   const setPrimaryMutation = useMutation({
@@ -76,7 +76,7 @@ export function RoomPhotosDialog({ open, onOpenChange, roomTypeId, roomName }: R
       queryClient.invalidateQueries({ queryKey: QK.adminRoomTypes() });
       toast({ title: t("adminRooms.primaryUpdated") });
     },
-    onError: (err: any) => { console.error(err); toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" }); },
+    onError: (err: any) => { if (import.meta.env.DEV) console.error(err); toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" }); },
   });
 
   const MAX_PHOTOS = 10;
@@ -150,7 +150,7 @@ export function RoomPhotosDialog({ open, onOpenChange, roomTypeId, roomName }: R
           (skippedLimit > 0 ? ` (${skippedLimit} ${t("adminRooms.photosSkippedLimit", { max: String(MAX_PHOTOS) })})` : ""),
       });
     } catch (err: any) {
-      console.error(err);
+      if (import.meta.env.DEV) console.error(err);
       toast({ title: t("adminRooms.uploadFailed"), description: t("common.unexpectedError"), variant: "destructive" });
     } finally {
       setUploading(false);

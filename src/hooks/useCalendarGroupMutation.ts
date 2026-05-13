@@ -7,6 +7,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { getConflictingRooms } from "@/lib/booking-conflicts";
 import { getEffectivePrice } from "@/lib/room-pricing";
 import type { RoomUnit, RoomTypeGuestPrice, BookingStatus } from "@/lib/supabase-types";
+import { DEFAULT_COMMISSION_RATE } from "@/lib/constants";
 
 type RoomUnitWithType = RoomUnit & {
   room_type: { name: string; name_uk?: string | null; base_price: number; max_guests: number };
@@ -76,7 +77,7 @@ export function useCalendarGroupMutation({ onStdSuccess, onGroupSuccess }: Callb
 
       const { data: profile } = await supabase
         .from("profiles").select("commission_rate").eq("user_id", user.id).maybeSingle();
-      const commissionRate = (profile as any)?.commission_rate || 3.0;
+      const commissionRate = profile?.commission_rate ?? DEFAULT_COMMISSION_RATE;
 
       const roomIds = selectedRooms.map(u => u.id);
       const conflicts = await getConflictingRooms(roomIds, ciStr, coStr);

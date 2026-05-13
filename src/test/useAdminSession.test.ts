@@ -93,7 +93,7 @@ describe("useAdminSession", () => {
     expect(result.current.isRoleLoading).toBe(false);
   });
 
-  it("warm cache — valid localStorage: isLoading starts false (skeleton skipped), role resolves async", async () => {
+  it("warm cache — valid localStorage: session and role resolve after async verify", async () => {
     const session = makeSession();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     mockAuth(session);
@@ -101,12 +101,11 @@ describe("useAdminSession", () => {
 
     const { result } = renderHook(() => useAdminSession());
 
-    // Synchronous initial state: readStoredSession() found a valid token →
-    // isLoading is false immediately so AdminLayout never renders the skeleton.
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.session).not.toBeNull();
-    expect(result.current.role).toBeNull();      // role still loading
-    expect(result.current.isRoleLoading).toBe(true);
+    // Synchronous initial state: always starts loading so admin content is
+    // never briefly exposed to a user whose session was server-side revoked.
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.session).toBeNull();
+    expect(result.current.role).toBeNull();
 
     // After async verify + role fetch
     await waitFor(() => expect(result.current.isRoleLoading).toBe(false));
@@ -115,24 +114,22 @@ describe("useAdminSession", () => {
     expect(result.current.session).not.toBeNull();
   });
 
-  it("invalid token — stale cache but server rejects: optimistic session is cleared after verify", async () => {
-    // readStoredSession() sees a valid-looking token and returns it, but
-    // getSession() returns null because the server has invalidated it.
+  it("invalid token — stale cache but server rejects: session stays null after verify", async () => {
     const session = makeSession();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     mockAuth(null); // server rejects
 
     const { result } = renderHook(() => useAdminSession());
 
-    // Optimistic: stale token appeared valid to readStoredSession
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.session).not.toBeNull();
+    // Always starts loading/null regardless of what is in localStorage
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.session).toBeNull();
 
-    // After async verify: session cleared, role never fetched
-    await waitFor(() => expect(result.current.session).toBeNull());
+    // After async verify: server rejected, so everything stays null
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.session).toBeNull();
     expect(result.current.role).toBeNull();
     expect(result.current.isRoleLoading).toBe(false);
-    expect(result.current.isLoading).toBe(false);
   });
 
   it("expired token — readStoredSession rejects it synchronously: isLoading starts true, settles null", async () => {
@@ -161,8 +158,8 @@ describe("useAdminSession", () => {
 
     const { result } = renderHook(() => useAdminSession());
 
-    // Warm cache: no skeleton
-    expect(result.current.isLoading).toBe(false);
+    // Always starts loading
+    expect(result.current.isLoading).toBe(true);
 
     await waitFor(() => expect(result.current.isRoleLoading).toBe(false));
     expect(result.current.session).not.toBeNull();

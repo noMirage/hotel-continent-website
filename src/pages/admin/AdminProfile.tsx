@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAdminProfile, useAdminProfileStats } from "@/hooks/useAdminProfileData";
 import { useAdminProfileMutation } from "@/hooks/useAdminProfileMutation";
+import { DEFAULT_COMMISSION_RATE, DEFAULT_COMMISSION_RATE_MANUAL } from "@/lib/constants";
 
 type DateRange = "today" | "week" | "month" | "year" | "custom";
 
@@ -56,8 +57,8 @@ export default function AdminProfile() {
   const stats = useMemo(() => {
     if (!uniqueBookings || !profile) return null;
 
-    const rateManual = (profile as any).commission_rate_manual ?? 5.0;
-    const rateSite   = (profile as any).commission_rate_site   ?? 3.0;
+    const rateManual = (profile as any).commission_rate_manual ?? DEFAULT_COMMISSION_RATE_MANUAL;
+    const rateSite   = (profile as any).commission_rate_site   ?? DEFAULT_COMMISSION_RATE;
 
     const checkinBookings = uniqueBookings.filter(b => b.status === "CHECK_IN" || b.status === "CHECK_OUT");
     const earnedRevenue   = checkinBookings.reduce((s, b) => s + Number(b.total_price), 0);

@@ -69,7 +69,7 @@ export function useAdminSettingsMutation() {
       toast({ title: t("settings.saved"), description: t("settings.savedDesc") });
     },
     onError: (error: Error) => {
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });

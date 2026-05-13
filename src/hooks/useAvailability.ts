@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { QK } from "@/lib/queryKeys";
+import { BLOCKING_STATUSES } from "@/lib/booking-status";
 
 export function useAvailability(
   roomTypeId: string | undefined,
@@ -32,7 +33,7 @@ export function useAvailability(
         .from("reservations")
         .select("room_unit_id")
         .in("room_unit_id", units.map(u => u.id))
-        .in("status", ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN"])
+        .in("status", BLOCKING_STATUSES as unknown as string[])
         .or(`and(check_in_date.lt.${checkOutStr},check_out_date.gt.${checkInStr})`);
       
       if (resError) throw resError;

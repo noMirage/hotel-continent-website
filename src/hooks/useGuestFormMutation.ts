@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { DEPOSIT_RATIO } from "@/lib/constants";
 
 export interface GuestFormEntry {
   full_name: string;
@@ -100,7 +101,7 @@ export function useGuestFormMutation({ onSaveSuccess }: Callbacks) {
 
       const update: Record<string, unknown> = { status: "CHECK_IN" };
       if (ubdFilled) {
-        update.total_price = Number((reservationTotalPrice * 0.8).toFixed(2));
+        update.total_price = Number((reservationTotalPrice * DEPOSIT_RATIO).toFixed(2));
       }
       if (ubdCount > 0) {
         const nights = differenceInDays(parseISO(reservationCheckOut), parseISO(reservationCheckIn));
@@ -126,7 +127,7 @@ export function useGuestFormMutation({ onSaveSuccess }: Callbacks) {
       onSaveSuccess();
     },
     onError: (e: Error) => {
-      console.error(e);
+      if (import.meta.env.DEV) console.error(e);
       toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
     },
   });

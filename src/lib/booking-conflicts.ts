@@ -1,6 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-
-const BLOCKING = ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN"] as const;
+import { BLOCKING_STATUSES } from "@/lib/booking-status";
 
 /**
  * Returns the room_unit_ids that already have an active booking overlapping
@@ -25,7 +24,7 @@ export async function getConflictingRooms(
     .from("reservations")
     .select("room_unit_id")
     .in("room_unit_id", roomUnitIds)
-    .in("status", BLOCKING as unknown as string[])
+    .in("status", BLOCKING_STATUSES as unknown as string[])
     .lt("check_in_date", checkOut)
     .gt("check_out_date", checkIn);
 
@@ -41,7 +40,7 @@ export async function getConflictingRooms(
     .from("group_bookings")
     .select("room_unit_ids")
     .filter("room_unit_ids", "ov", `{${roomUnitIds.join(",")}}`)
-    .in("status", BLOCKING as unknown as string[])
+    .in("status", BLOCKING_STATUSES as unknown as string[])
     .lt("check_in_date", checkOut)
     .gt("check_out_date", checkIn);
 
@@ -77,7 +76,7 @@ export async function checkFeeConflicts(
   lateCheckoutFee: number,
   excludeReservationId?: string,
 ): Promise<{ earlyConflict: boolean; lateConflict: boolean }> {
-  const ACTIVE = ["UNPROCESSED", "PENDING", "CONFIRMED", "CHECK_IN"] as string[];
+  const ACTIVE = BLOCKING_STATUSES as unknown as string[];
   let earlyConflict = false;
   let lateConflict = false;
 

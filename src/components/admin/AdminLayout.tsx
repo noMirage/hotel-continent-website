@@ -30,6 +30,7 @@ import { useHotelSettings } from "@/hooks/useHotelSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
 import type { AppRole } from "@/lib/supabase-types";
+import { AdminErrorBoundary } from "@/components/admin/AdminErrorBoundary";
 
 // Items all roles can see
 const baseNavItems: Array<{ href: string; labelKey: TranslationKey; icon: any }> = [
@@ -261,7 +262,9 @@ export default function AdminLayout() {
       <main className="flex-1 min-w-0 overflow-x-hidden lg:pt-0 pt-16 lg:ml-64">
         <div className="p-6 md:p-8">
           <div key={location.pathname} className="animate-in fade-in-0 slide-in-from-bottom-3 duration-300">
-            <Outlet />
+            <AdminErrorBoundary>
+              <Outlet />
+            </AdminErrorBoundary>
           </div>
         </div>
       </main>

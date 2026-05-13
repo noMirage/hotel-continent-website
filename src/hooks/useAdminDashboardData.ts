@@ -28,7 +28,12 @@ export function useAdminDashboardStats(revPeriod: RevPeriod) {
       const today = format(new Date(), "yyyy-MM-dd");
       const { start, end } = periodBounds(revPeriod);
 
-      const { data: reservations, error } = await supabase.from("reservations").select("*");
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+      const { data: reservations, error } = await supabase
+        .from("reservations")
+        .select("*")
+        .gte("created_at", oneYearAgo.toISOString());
       if (error) throw error;
       const all = (reservations as Reservation[]).filter(r => (r as any).type !== "banquet");
 
