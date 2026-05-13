@@ -12,6 +12,7 @@ import type { Reservation, GuestForm } from "@/lib/supabase-types";
 import { QK } from "@/lib/queryKeys";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 
 interface Props {
   open: boolean;
@@ -21,7 +22,7 @@ interface Props {
 
 function formatDate(dateStr: string): string {
   try {
-    return format(new Date(dateStr), "dd.MM.yyyy");
+    return format(fromLocalDateString(dateStr), "dd.MM.yyyy");
   } catch {
     return dateStr;
   }

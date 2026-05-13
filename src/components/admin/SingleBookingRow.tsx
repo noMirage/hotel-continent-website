@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 import type { Locale } from "date-fns/locale";
 import { Check, X, Eye, LogIn, LogOut, Trash2, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -106,13 +107,13 @@ export function SingleBookingRow({
         {booking.guest_phone && !booking.guest_email && <p className="text-sm text-muted-foreground mb-1">{booking.guest_phone}</p>}
         {booking.type === "banquet" ? (
           <p className="text-sm text-muted-foreground">
-            {eventTypeLabel(booking.event_type, t)} — {format(new Date(booking.check_in_date), "dd.MM.yyyy", { locale: dateLocale })}
+            {eventTypeLabel(booking.event_type, t)} — {format(fromLocalDateString(booking.check_in_date), "dd.MM.yyyy", { locale: dateLocale })}
             {" · "}{booking.guests_count ?? booking.num_guests} {t("bookings.guest")}s
           </p>
         ) : (
           <p className="text-sm text-muted-foreground">
-            {format(new Date(booking.check_in_date), "dd MMM yyyy", { locale: dateLocale })} -{" "}
-            {format(new Date(booking.check_out_date), "dd MMM yyyy", { locale: dateLocale })}
+            {format(fromLocalDateString(booking.check_in_date), "dd MMM yyyy", { locale: dateLocale })} -{" "}
+            {format(fromLocalDateString(booking.check_out_date), "dd MMM yyyy", { locale: dateLocale })}
             {" • "}{booking.num_guests} {t("bookings.guest")}{booking.num_guests > 1 ? "s" : ""}
           </p>
         )}

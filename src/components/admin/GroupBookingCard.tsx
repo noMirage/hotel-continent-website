@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 import type { Locale } from "date-fns/locale";
 import { Check, X, Eye, LogIn, LogOut, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -121,8 +122,8 @@ export function GroupBookingCard({
               </div>
               <p className="text-sm text-muted-foreground mb-1">{grpBookings[0].guest_email}</p>
               <p className="text-sm text-muted-foreground mb-1">
-                {format(new Date(checkIn), "dd MMM yyyy", { locale: dateLocale })} -{" "}
-                {format(new Date(checkOut), "dd MMM yyyy", { locale: dateLocale })}
+                {format(fromLocalDateString(checkIn), "dd MMM yyyy", { locale: dateLocale })} -{" "}
+                {format(fromLocalDateString(checkOut), "dd MMM yyyy", { locale: dateLocale })}
                 {" • "}{numGuests} {t("bookings.guest")}{numGuests > 1 ? "s" : ""}
               </p>
               <p className="text-xs text-muted-foreground">

@@ -4,6 +4,7 @@ import {
   parseISO, isWithinInterval, startOfDay, endOfDay,
   getDaysInMonth, eachDayOfInterval, isBefore, isAfter,
 } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 import { uk as ukLocale, enUS } from "date-fns/locale";
 import { Search, Filter, Download, Plus, BarChart2, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -520,11 +521,11 @@ export default function AdminBookings() {
                   </div>
                   <div className="min-w-0">
                     <Label className="text-muted-foreground">{t("bookings.checkIn")}</Label>
-                    <p className="font-medium">{format(new Date(first.check_in_date), "dd MMM yyyy", { locale: dateLocale })}</p>
+                    <p className="font-medium">{format(fromLocalDateString(first.check_in_date), "dd MMM yyyy", { locale: dateLocale })}</p>
                   </div>
                   <div className="min-w-0">
                     <Label className="text-muted-foreground">{t("bookings.checkOut")}</Label>
-                    <p className="font-medium">{format(new Date(first.check_out_date), "dd MMM yyyy", { locale: dateLocale })}</p>
+                    <p className="font-medium">{format(fromLocalDateString(first.check_out_date), "dd MMM yyyy", { locale: dateLocale })}</p>
                   </div>
                   <div className="min-w-0">
                     <Label className="text-muted-foreground">{t("bookings.accommodation")}</Label>

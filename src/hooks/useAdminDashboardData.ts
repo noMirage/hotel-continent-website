@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import type { GroupBooking, Reservation } from "@/lib/supabase-types";
@@ -46,7 +47,7 @@ export function useAdminDashboardStats(revPeriod: RevPeriod) {
       const earnedRevenue = all
         .filter(r => {
           if (r.status !== "CHECK_IN" && r.status !== "CHECK_OUT") return false;
-          const d = new Date(r.check_in_date);
+          const d = fromLocalDateString(r.check_in_date);
           return d >= start && d <= end;
         })
         .reduce((sum, r) => sum + Number(r.total_price), 0);
@@ -92,7 +93,7 @@ export function useAdminDashboardGroupStats(revPeriod: RevPeriod) {
       const groupRevenue   = all
         .filter(g => {
           if (g.status !== "CHECK_IN" && g.status !== "CHECK_OUT") return false;
-          const d = new Date(g.check_in_date);
+          const d = fromLocalDateString(g.check_in_date);
           return d >= start && d <= end;
         })
         .reduce((sum, g) => sum + Number(g.total_price), 0);

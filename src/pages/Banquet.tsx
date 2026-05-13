@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { addDays, format as dateFnsFormat } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 import { uk as ukLocale, enUS } from "date-fns/locale";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -108,7 +109,7 @@ export default function BanquetPage() {
       guest_email:       "",
       guest_phone:       values.guest_phone,
       check_in_date:     values.event_date,
-      check_out_date:    dateFnsFormat(addDays(new Date(values.event_date), 1), "yyyy-MM-dd"),
+      check_out_date:    dateFnsFormat(addDays(fromLocalDateString(values.event_date), 1), "yyyy-MM-dd"),
       num_guests:        values.guests_count,
       total_price:       0,
       tourist_tax_amount: 0,

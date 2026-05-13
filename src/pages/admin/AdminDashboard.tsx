@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { hotelConfig } from "@/config/hotel";
 import { useHotelSettings } from "@/hooks/useHotelSettings";
 import { format } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 import { uk as ukLocale, enUS } from "date-fns/locale";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { statusBadgeClass } from "@/lib/booking-status";
@@ -255,7 +256,7 @@ export default function AdminDashboard() {
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {format(new Date(booking.checkIn), "dd MMM", { locale: dateLocale })} – {format(new Date(booking.checkOut), "dd MMM yyyy", { locale: dateLocale })}
+                        {format(fromLocalDateString(booking.checkIn), "dd MMM", { locale: dateLocale })} – {format(fromLocalDateString(booking.checkOut), "dd MMM yyyy", { locale: dateLocale })}
                       </p>
                     </div>
                     <div className="text-right flex-shrink-0">

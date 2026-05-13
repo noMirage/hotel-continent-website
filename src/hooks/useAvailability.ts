@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { QK } from "@/lib/queryKeys";
 import { BLOCKING_STATUSES } from "@/lib/booking-status";
+import { toLocalDateString } from "@/lib/date-utils";
 
 export function useAvailability(
   roomTypeId: string | undefined,
@@ -10,7 +11,7 @@ export function useAvailability(
   checkOut: Date | undefined
 ) {
   return useQuery({
-    queryKey: QK.availability(roomTypeId, checkIn?.toISOString(), checkOut?.toISOString()),
+    queryKey: QK.availability(roomTypeId, checkIn ? toLocalDateString(checkIn) : undefined, checkOut ? toLocalDateString(checkOut) : undefined),
     queryFn: async () => {
       if (!roomTypeId || !checkIn || !checkOut) return [];
       

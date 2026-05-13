@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAdminArchiveBookings, type ArchiveBooking } from "@/hooks/useAdminArchiveData";
 import { format, differenceInDays, parseISO, startOfDay, endOfDay } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 import { uk as ukLocale, enUS } from "date-fns/locale";
 import { Search, Archive, Eye, X, CalendarIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -163,7 +164,7 @@ export default function AdminArchive() {
   const filtered = bookings?.filter((b) => {
     const q = searchQuery.toLowerCase();
     const matchesSearch = b.guest_name.toLowerCase().includes(q) || b.guest_email.toLowerCase().includes(q);
-    const checkInDate = new Date(b.check_in_date);
+    const checkInDate = fromLocalDateString(b.check_in_date);
     const matchesFrom = !dateFrom || checkInDate >= startOfDay(dateFrom);
     const matchesTo   = !dateTo   || checkInDate <= endOfDay(dateTo);
     return matchesSearch && matchesFrom && matchesTo;
@@ -261,8 +262,8 @@ export default function AdminArchive() {
                       </div>
                       <p className="text-sm text-muted-foreground">{booking.guest_email}</p>
                       <p className="text-sm text-muted-foreground">
-                        {format(new Date(booking.check_in_date), "dd MMM yyyy", { locale: dateLocale })} -{" "}
-                        {format(new Date(booking.check_out_date), "dd MMM yyyy", { locale: dateLocale })}
+                        {format(fromLocalDateString(booking.check_in_date), "dd MMM yyyy", { locale: dateLocale })} -{" "}
+                        {format(fromLocalDateString(booking.check_out_date), "dd MMM yyyy", { locale: dateLocale })}
                         {" • "}{booking.num_guests} {t("bookings.guest")}{booking.num_guests > 1 ? "s" : ""}
                       </p>
                     </div>

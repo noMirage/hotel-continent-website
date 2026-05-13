@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { getConflictingRooms } from "@/lib/booking-conflicts";
+import { toLocalDateString } from "@/lib/date-utils";
 import { BLOCKING_STATUSES } from "@/lib/booking-status";
 import { hotelConfig } from "@/config/hotel";
 import { getEffectivePrice } from "@/lib/room-pricing";
@@ -87,8 +88,8 @@ function buildPackage(
 function useAvailabilitySearch(params: SearchParams | null) {
   return useQuery({
     queryKey: QK.heroAvailability(
-      params?.checkIn?.toISOString(),
-      params?.checkOut?.toISOString(),
+      params?.checkIn ? toLocalDateString(params.checkIn) : undefined,
+      params?.checkOut ? toLocalDateString(params.checkOut) : undefined,
       JSON.stringify(params?.rooms),
     ),
     queryFn: async (): Promise<RoomTypeAvailability[]> => {

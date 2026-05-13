@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { format, differenceInDays } from "date-fns";
+import { fromLocalDateString } from "@/lib/date-utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -16,8 +17,7 @@ export type RoomEntry = { id: number; guests: number };
 
 function parseSafeDate(raw: string | null): Date | undefined {
   if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return undefined;
-  const d = new Date(raw);
-  return isNaN(d.getTime()) ? undefined : d;
+  return fromLocalDateString(raw);
 }
 
 function parseSafeAdults(raw: string | null): number {
