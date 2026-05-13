@@ -7,6 +7,10 @@ import { BLOCKING_STATUSES } from "@/lib/booking-status";
  *
  * Pass excludeReservationIds to ignore specific reservations (e.g. the one
  * being edited). Pass excludeGroupBookingId for the group booking being edited.
+ *
+ * When neither exclusion is needed (public booking flow), uses the
+ * get_blocked_unit_ids SECURITY DEFINER RPC to bypass RLS — anonymous visitors
+ * cannot SELECT from reservations or group_booking_room_assignments directly.
  */
 export async function getConflictingRooms(
   roomUnitIds: string[],
@@ -17,6 +21,17 @@ export async function getConflictingRooms(
 ): Promise<string[]> {
   if (roomUnitIds.length === 0) return [];
 
+  // ── Public / anonymous flow (no exclusions) ────────────────────────────────
+  // Direct SELECT on reservations requires admin auth (RLS). Use the
+  // SECURITY DEFINER RPC which exposes only room_unit_id — no guest PII.
+  if (!excludeReservationIds?.length && !excludeGroupBookingId) {
+    const { data: blocked } = await (supabase as any)
+      .rpc("get_blocked_unit_ids", { p_check_in: checkIn, p_check_out: checkOut });
+    const blockedSet = new Set<string>((blocked ?? []).map((r: { room_unit_id: string }) => r.room_unit_id));
+    return roomUnitIds.filter(id => blockedSet.has(id));
+  }
+
+  // ── Admin flow (with exclusions — admin auth required) ────────────────────
   const conflicting = new Set<string>();
 
   // ── Regular reservations ───────────────────────────────────────────────────

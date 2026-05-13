@@ -15,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { getConflictingRooms } from "@/lib/booking-conflicts";
 import { toLocalDateString } from "@/lib/date-utils";
-import { BLOCKING_STATUSES } from "@/lib/booking-status";
 import { hotelConfig } from "@/config/hotel";
 import { getEffectivePrice } from "@/lib/room-pricing";
 import type { RoomTypeGuestPrice } from "@/lib/supabase-types";
@@ -97,35 +96,22 @@ function useAvailabilitySearch(params: SearchParams | null) {
       const ciStr = format(params.checkIn, "yyyy-MM-dd");
       const coStr = format(params.checkOut, "yyyy-MM-dd");
 
-      // 1. Booked unit IDs from regular reservations — UNPROCESSED is also blocking
-      //    to prevent offering rooms that already have a pending request
-      const { data: booked } = await supabase
-        .from("reservations")
-        .select("room_unit_id")
-        .in("status", BLOCKING_STATUSES as unknown as string[])
-        .or(`and(check_in_date.lt.${coStr},check_out_date.gt.${ciStr})`);
-      const bookedIds = new Set((booked ?? []).map((r: any) => r.room_unit_id));
+      // Use SECURITY DEFINER RPC — works for anonymous visitors.
+      // Direct SELECT on reservations/group_booking_room_assignments requires
+      // admin auth (RLS), causing silent empty results for unauthenticated users.
+      const { data: blocked, error: blockedError } = await (supabase as any)
+        .rpc("get_blocked_unit_ids", { p_check_in: ciStr, p_check_out: coStr });
+      if (blockedError) throw blockedError;
+      const bookedIds = new Set<string>((blocked ?? []).map((r: { room_unit_id: string }) => r.room_unit_id));
 
-      // 2. Also exclude group-booked units
-      const { data: groupBooked } = await supabase
-        .from("group_booking_room_assignments")
-        .select("room_unit_id, group_booking:group_bookings(check_in_date, check_out_date, status)")
-        .filter("group_booking.status", "in", '("PENDING","CONFIRMED","CHECK_IN")');
-      (groupBooked ?? []).forEach((g: any) => {
-        const gb = g.group_booking;
-        if (gb && gb.check_in_date < coStr && gb.check_out_date > ciStr) {
-          bookedIds.add(g.room_unit_id);
-        }
-      });
-
-      // 3. All active units with their room type
+      // All active units with their room type (public RLS allows anonymous read)
       const { data: units, error } = await supabase
         .from("room_units")
         .select("id, room_type_id, room_type:room_types(id, name, name_uk, slug, max_guests, base_price, image_url, short_description, short_description_uk)")
         .eq("is_active", true);
       if (error) throw error;
 
-      // 4. Group by room_type, count available units
+      // Group by room_type, count available units
       const typeMap = new Map<string, RoomTypeAvailability>();
       for (const unit of units ?? []) {
         const rt = (unit as any).room_type;
@@ -481,13 +467,11 @@ function BookPackageModal({
       const ciStr = format(params.checkIn, "yyyy-MM-dd");
       const coStr = format(params.checkOut, "yyyy-MM-dd");
 
-      // Re-fetch available units fresh — same status list as the search query
-      const { data: booked } = await supabase
-        .from("reservations")
-        .select("room_unit_id")
-        .in("status", BLOCKING_STATUSES as unknown as string[])
-        .or(`and(check_in_date.lt.${coStr},check_out_date.gt.${ciStr})`);
-      const bookedIds = new Set((booked ?? []).map((r: any) => r.room_unit_id));
+      // Re-fetch blocked units fresh via SECURITY DEFINER RPC (works anonymously)
+      const { data: blocked, error: blockedErr } = await (supabase as any)
+        .rpc("get_blocked_unit_ids", { p_check_in: ciStr, p_check_out: coStr });
+      if (blockedErr) throw blockedErr;
+      const bookedIds = new Set<string>((blocked ?? []).map((r: { room_unit_id: string }) => r.room_unit_id));
 
       const { data: units } = await supabase
         .from("room_units")
