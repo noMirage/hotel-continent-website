@@ -32,3 +32,11 @@ supabase/.temp/
 *.sln
 *.sw?
 /strategy
+.vercel
+.env*
+
+# Monorepo tooling
+.turbo
+.next
+*.tsbuildinfo
+next-env.d.ts
