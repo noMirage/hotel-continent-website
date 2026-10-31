@@ -1,4 +1,6 @@
-# Architecture
+# Architecture (admin app)
+
+> Paths below are relative to `apps/admin/`. Since the monorepo split, `supabase-types.ts`, `room-pricing.ts`, `date-utils.ts`, `phone-utils.ts`, `booking-status.ts`, the generated DB types and `config/hotel.ts` live in `packages/shared/src/` and are imported as `@continent/shared/<name>` (`hotel.ts` → `hotel-config`). The public website is `apps/site` — see the root README.
 
 ## Overview
 
