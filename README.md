@@ -38,6 +38,7 @@ Environment variables live in the root `.env` (both apps read it):
 ```
 VITE_SUPABASE_URL=...              # admin (browser) — the site falls back to these on the server
 VITE_SUPABASE_PUBLISHABLE_KEY=...
+SUPABASE_SECRET_KEY=...            # site (server only): public-form RPCs run as service_role
 SUPABASE_URL=...                   # site (server only), optional locally
 SUPABASE_PUBLISHABLE_KEY=...
 REVALIDATE_SECRET=...              # site: secret of the Supabase → /api/revalidate webhook

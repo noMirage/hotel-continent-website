@@ -770,6 +770,7 @@ export const translations = {
   "common.na": { en: "N/A", uk: "Н/Д" },
   "common.roomConflict": { en: "Room(s) {rooms} already have an active booking for those dates", uk: "Кімната(и) {rooms} вже зайнята(і) на ці дати" },
   "common.roomUnavailable": { en: "This room is no longer available for the selected dates. Please choose different dates.", uk: "Цей номер більше не доступний на обрані дати. Будь ласка, оберіть інші дати." },
+  "common.tooManyRequests": { en: "Too many requests from this phone number today. Please call us or try again tomorrow.", uk: "Забагато заявок з цього номера телефону за сьогодні. Будь ласка, зателефонуйте нам або спробуйте завтра." },
   "common.earlyCheckinConflict": { en: "Cannot add early check-in: another guest checks out on this day. The room won't be ready in time.", uk: "Неможливо додати ранній заїзд: інший гість виїжджає цього ж дня. Номер не буде готовий вчасно." },
   "common.lateCheckoutConflict": { en: "Cannot add late check-out: another guest checks in on this day.", uk: "Неможливо додати пізній виїзд: інший гість заїжджає цього ж дня." },
 

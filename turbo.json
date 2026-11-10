@@ -6,6 +6,7 @@
     "VITE_SUPABASE_PROJECT_ID",
     "SUPABASE_URL",
     "SUPABASE_PUBLISHABLE_KEY",
+    "SUPABASE_SECRET_KEY",
     "NEXT_PUBLIC_SITE_URL",
     "SITE_NOINDEX",
     "REVALIDATE_SECRET"
@@ -22,6 +23,7 @@
       ]
     },
     "test": {},
+    "lint": {},
     "typecheck": {},
     "dev": {
       "cache": false,

@@ -2,11 +2,12 @@
 
 import { checkBotId } from "botid/server";
 import { z } from "zod";
-import { supabase } from "@/lib/supabase";
+import { supabaseWriter } from "@/lib/supabase";
 
 // Public form submissions. Each action validates the shape, then calls a SECURITY DEFINER
-// RPC (supabase/migrations/20261015000001_public_submission_rpcs.sql) that re-validates and
-// derives prices / room units / titles on the database side.
+// RPC (supabase/migrations/20261015000001_public_submission_rpcs.sql, locked down to
+// service_role in 20261110000001_public_rpcs_server_only.sql) that re-validates, rate-limits
+// per phone number and derives prices / room units / titles on the database side.
 
 export type ActionResult<T = undefined> =
   | { ok: true; data: T; error?: undefined }
@@ -14,11 +15,12 @@ export type ActionResult<T = undefined> =
 
 export type SubmissionError =
   | "INVALID_NAME" | "INVALID_PHONE" | "INVALID_DATES" | "INVALID_ROOMS" | "INVALID_GUESTS"
-  | "INVALID_EVENT_TYPE" | "INVALID_PROMOTION" | "NO_AVAILABILITY" | "INVALID_INPUT" | "BOT" | "UNKNOWN";
+  | "INVALID_EVENT_TYPE" | "INVALID_PROMOTION" | "NO_AVAILABILITY" | "TOO_MANY_REQUESTS"
+  | "INVALID_INPUT" | "BOT" | "UNKNOWN";
 
 const KNOWN_ERRORS = new Set<SubmissionError>([
   "INVALID_NAME", "INVALID_PHONE", "INVALID_DATES", "INVALID_ROOMS", "INVALID_GUESTS",
-  "INVALID_EVENT_TYPE", "INVALID_PROMOTION", "NO_AVAILABILITY",
+  "INVALID_EVENT_TYPE", "INVALID_PROMOTION", "NO_AVAILABILITY", "TOO_MANY_REQUESTS",
 ]);
 
 function toError(message: string | undefined): SubmissionError {
@@ -59,7 +61,7 @@ export async function createBooking(input: BookingInput): Promise<ActionResult<{
   if (!parsed.success) return { ok: false, error: "INVALID_INPUT" };
   const v = parsed.data;
 
-  const { data, error } = await supabase().rpc("create_public_booking", {
+  const { data, error } = await supabaseWriter().rpc("create_public_booking", {
     p_check_in: v.checkIn,
     p_check_out: v.checkOut,
     p_rooms: v.rooms.map((r) => ({ room_type_id: r.roomTypeId, guests: r.guests })),
@@ -89,7 +91,7 @@ export async function submitBanquetRequest(input: z.infer<typeof banquetSchema>)
   const parsed = banquetSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "INVALID_INPUT" };
   const v = parsed.data;
-  const { error } = await supabase().rpc("submit_banquet_request", {
+  const { error } = await supabaseWriter().rpc("submit_banquet_request", {
     p_guest_name: v.guestName,
     p_guest_phone: v.guestPhone,
     p_event_date: v.eventDate,
@@ -115,7 +117,7 @@ export async function submitPromoApplication(input: z.infer<typeof promoSchema>)
   const parsed = promoSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "INVALID_INPUT" };
   const v = parsed.data;
-  const { error } = await supabase().rpc("submit_promo_application", {
+  const { error } = await supabaseWriter().rpc("submit_promo_application", {
     p_promotion_id: v.promotionId,
     p_guest_name: v.guestName,
     p_guest_phone: v.guestPhone,
@@ -142,7 +144,7 @@ export async function submitGroupRequest(input: z.infer<typeof groupSchema>): Pr
   const parsed = groupSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "INVALID_INPUT" };
   const v = parsed.data;
-  const { error } = await supabase().rpc("submit_group_request", {
+  const { error } = await supabaseWriter().rpc("submit_group_request", {
     p_guest_name: v.guestName,
     p_guest_phone: v.guestPhone,
     p_guest_email: v.guestEmail ?? null,

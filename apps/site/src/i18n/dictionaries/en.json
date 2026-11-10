@@ -282,6 +282,7 @@
   "common.error": "Error",
   "common.unexpectedError": "An unexpected error occurred. Please try again.",
   "common.roomUnavailable": "This room is no longer available for the selected dates. Please choose different dates.",
+  "common.tooManyRequests": "Too many requests from this phone number today. Please call us or try again tomorrow.",
   "groupRequest.eyebrow": "Group Bookings",
   "groupRequest.title": "Book for a Group",
   "groupRequest.subtitle": "Planning a group stay of 10 or more? Leave your details and our manager will prepare a personalised offer.",

@@ -8,6 +8,8 @@
 --
 -- `secret` must equal REVALIDATE_SECRET of the site's Vercel project. Re-running replaces
 -- the previous URL/secret. Statement-level triggers: one request per admin save, not per row.
+-- room_units only fires on the columns the site shows (number, type, active flag) — not on
+-- cleanliness / housekeeping updates, which happen many times a day.
 -- Requires the pg_net extension (Dashboard → Database → Extensions, or the line below).
 
 CREATE EXTENSION IF NOT EXISTS pg_net WITH SCHEMA extensions;
@@ -44,12 +46,25 @@ REVOKE ALL ON FUNCTION public.notify_site_revalidate() FROM PUBLIC;
 DO $$
 DECLARE
   t TEXT;
+  -- table → columns whose UPDATE should trigger a refresh (NULL = any column)
+  tables TEXT[][] := ARRAY[
+    ['room_types',             NULL],
+    ['room_type_guest_prices', NULL],
+    ['room_media',             NULL],
+    ['room_units',             'room_number, room_type_id, is_active'],
+    ['hotel_settings',         NULL],
+    ['promotions',             NULL]
+  ];
+  i INT;
 BEGIN
-  FOREACH t IN ARRAY ARRAY['room_types', 'room_type_guest_prices', 'room_media', 'room_units', 'hotel_settings', 'promotions'] LOOP
+  FOR i IN 1 .. array_length(tables, 1) LOOP
+    t := tables[i][1];
     EXECUTE format('DROP TRIGGER IF EXISTS site_revalidate ON public.%I', t);
     EXECUTE format(
-      'CREATE TRIGGER site_revalidate AFTER INSERT OR UPDATE OR DELETE ON public.%I
-         FOR EACH STATEMENT EXECUTE FUNCTION public.notify_site_revalidate()', t);
+      'CREATE TRIGGER site_revalidate AFTER INSERT OR DELETE OR UPDATE %s ON public.%I
+         FOR EACH STATEMENT EXECUTE FUNCTION public.notify_site_revalidate()',
+      CASE WHEN tables[i][2] IS NULL THEN '' ELSE 'OF ' || tables[i][2] END,
+      t);
   END LOOP;
 END
 $$;
