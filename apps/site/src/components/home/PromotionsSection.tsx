@@ -6,6 +6,7 @@ import { format, parseISO } from "date-fns";
 import { uk as ukLocale, enUS } from "date-fns/locale";
 import { Globe, Check, Loader2, X, Sparkles, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -338,7 +339,7 @@ export function PromotionsSection() {
               <p className="text-muted-foreground text-sm">{t("promos.webDiscount.desc")}</p>
             </div>
             <Button className="sm:ml-auto shrink-0" asChild>
-              <a href="/rooms">{t("promos.webDiscount.cta")}</a>
+              <Link to="/rooms">{t("promos.webDiscount.cta")}</Link>
             </Button>
           </div>
         </div>

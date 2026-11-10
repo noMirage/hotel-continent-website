@@ -37,7 +37,7 @@ export function TestimonialsSection() {
 
                 {/* Quote */}
                 <p className="text-foreground leading-relaxed mb-6 flex-1 italic">
-                  "{t(`testimonials.${key}.text` as any)}"
+                  &ldquo;{t(`testimonials.${key}.text`)}&rdquo;
                 </p>
 
                 {/* Author */}

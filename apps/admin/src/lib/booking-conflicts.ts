@@ -25,9 +25,9 @@ export async function getConflictingRooms(
   // Direct SELECT on reservations requires admin auth (RLS). Use the
   // SECURITY DEFINER RPC which exposes only room_unit_id — no guest PII.
   if (!excludeReservationIds?.length && !excludeGroupBookingId) {
-    const { data: blocked } = await (supabase as any)
+    const { data: blocked } = await supabase
       .rpc("get_blocked_unit_ids", { p_check_in: checkIn, p_check_out: checkOut });
-    const blockedSet = new Set<string>((blocked ?? []).map((r: { room_unit_id: string }) => r.room_unit_id));
+    const blockedSet = new Set((blocked ?? []).map((r) => r.room_unit_id));
     return roomUnitIds.filter(id => blockedSet.has(id));
   }
 

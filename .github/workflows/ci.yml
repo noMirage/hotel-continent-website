@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck, lint, test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Builds are done by Vercel (they need the Supabase env). CI gates on what runs without it.
+      - run: npx turbo run typecheck lint test
+
+      # Applies every migration to an embedded Postgres and checks grants, role guards and
+      # the double-booking triggers (supabase/tests/migrations.test.mjs).
+      - run: npm run test:db
+
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high

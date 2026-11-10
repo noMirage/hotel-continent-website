@@ -19,6 +19,8 @@ async function HotelJsonLd({ locale }: { locale: Locale }) {
   const minPrice = Math.min(
     ...rooms.map((r) => getMinPrice(prices.filter((p) => p.room_type_id === r.id), Number(r.base_price))),
   );
+  // Address comes from the admin Settings page (same source as the footer and contact page).
+  const address = (locale === "uk" && settings?.address_uk) || settings?.address || hotelConfig.address;
   const data = {
     "@context": "https://schema.org",
     "@type": "Hotel",
@@ -27,13 +29,7 @@ async function HotelJsonLd({ locale }: { locale: Locale }) {
     url: SITE_URL + localizePath("/", locale),
     telephone: settings?.phone ?? hotelConfig.phone,
     email: settings?.email ?? hotelConfig.email,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: locale === "uk" ? "вул. Сонячна, 59" : "59 Soniachna St.",
-      addressLocality: locale === "uk" ? "Поляна" : "Polyana",
-      addressRegion: locale === "uk" ? "Закарпатська область" : "Zakarpattia Oblast",
-      addressCountry: "UA",
-    },
+    address: { "@type": "PostalAddress", streetAddress: address, addressCountry: "UA" },
     checkinTime: settings?.check_in_time ?? hotelConfig.checkInTime,
     checkoutTime: settings?.check_out_time ?? hotelConfig.checkOutTime,
     priceRange: Number.isFinite(minPrice) ? `від ${minPrice} UAH` : undefined,

@@ -1,20 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-const BEFORE_MOUNT = new Date(0);
+import { useMemo, useSyncExternalStore } from "react";
 
 /**
- * Start of today, read on the client after mount. Pages are prerendered, so "today" must
- * not be evaluated during render (it would freeze at build time). Before mount this
- * returns the epoch, i.e. no date restriction; date pickers only open after interaction.
+ * Start of today, read on the client after hydration. Pages are prerendered, so "today"
+ * must not be evaluated during server render (it would freeze at build time). The server
+ * snapshot is the epoch, i.e. no date restriction; date pickers only open after interaction.
  */
+const subscribe = () => () => {};
+
+function todayMs(): number {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
 export function useToday(): Date {
-  const [today, setToday] = useState<Date | null>(null);
-  useEffect(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    setToday(d);
-  }, []);
-  return today ?? BEFORE_MOUNT;
+  const ms = useSyncExternalStore(subscribe, todayMs, () => 0);
+  return useMemo(() => new Date(ms), [ms]);
 }

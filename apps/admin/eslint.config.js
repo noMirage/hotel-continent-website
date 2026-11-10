@@ -21,6 +21,9 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      // ~80 legacy `any`s, mostly in tests and Supabase result mapping. Reported, not blocking;
+      // tighten to "error" once they are typed.
+      "@typescript-eslint/no-explicit-any": "warn",
     },
   },
 );
