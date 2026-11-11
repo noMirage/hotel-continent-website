@@ -90,12 +90,12 @@ Branch `feat/monorepo-site` (merged as PR #1). Order matters — do them top to 
 
 ## 6. Clean up the admin app (separate PR)
 
-- [ ] Remove the public pages/components/hooks from `apps/admin` (`src/pages/*.tsx` outside `admin/`, `components/home`, `components/layout`, `components/rooms`, `useRoomBookingForm`, `useAvailability`, …) and their translations.
-- [ ] Move the site's translation strings out of `apps/admin/src/i18n/translations.ts` (today
-      `apps/site/scripts/sync-i18n.mjs` generates the site dictionaries from it).
-- [ ] `vercel.json`: redirect `/` → `/admin`.
-- [ ] Site: add redirect `/admin/:path*` → `https://admin.hotel-continent.com/admin/:path*` in `apps/site/next.config.ts`.
-- [ ] Admin `vite.config.ts`: fix `manualChunks` (recharts chunk pulls `clsx` into the entry).
+- [x] Remove the public pages/components/hooks from `apps/admin` (`src/pages/*.tsx` outside `admin/`, `components/home`, `components/layout`, `components/rooms`, `useRoomBookingForm`, `useAvailability`, …) and their translations.
+- [x] Site owns its dictionaries (`apps/site/src/i18n/dictionaries/*.json`); the sync script is gone.
+- [x] `vercel.json`: redirect `/` → `/admin`; admin is `noindex` (header, meta, robots.txt).
+- [x] Site: `/admin/:path*` → `https://admin.hotel-continent.com/admin/:path*` and `www` → apex redirects in `apps/site/next.config.ts`.
+- [ ] Optional: move the admin project to Root Directory `apps/admin` (needs `vercel.json` moved there) so Vercel's built-in *Skip deployments* can replace the deprecated `turbo-ignore` command.
+- [ ] Admin `vite.config.ts`: revisit `manualChunks` (entry chunk is ~600 kB).
 
 ## Known, deliberately not changed
 

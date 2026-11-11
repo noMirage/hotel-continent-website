@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route, useLocation } from "react-router-dom";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -12,21 +12,11 @@ function ScrollToTop() {
 }
 import { LanguageProvider } from "@/i18n/LanguageContext";
 
-// Layouts
-import { PublicLayout } from "@/components/layout/PublicLayout";
 import AdminLayout from "@/components/admin/AdminLayout";
-
-// Public Pages — Index stays eager (landing page); heavier pages are lazy-split
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Policies from "./pages/Policies";
-const Rooms               = lazy(() => import("./pages/Rooms"));
-const RoomDetails         = lazy(() => import("./pages/RoomDetails"));
-const BookingConfirmation = lazy(() => import("./pages/BookingConfirmation"));
-const About               = lazy(() => import("./pages/About"));
-const Contact             = lazy(() => import("./pages/Contact"));
-const Leisure             = lazy(() => import("./pages/Leisure"));
-const Banquet             = lazy(() => import("./pages/Banquet"));
+
+// The public website lives in apps/site (hotel-continent.com). This app is the admin panel
+// only, served at admin.hotel-continent.com under /admin/*.
 
 // Admin Pages (lazy-loaded — each chunk is only fetched when the route is visited)
 const AdminLogin          = lazy(() => import("./pages/admin/AdminLogin"));
@@ -72,20 +62,9 @@ const App = () => (
             </div>
           }>
           <Routes>
-            {/* Public Routes */}
-            <Route element={<PublicLayout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/rooms" element={<Rooms />} />
-              <Route path="/rooms/:slug" element={<RoomDetails />} />
-              <Route path="/booking-confirmation" element={<BookingConfirmation />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/policies" element={<Policies />} />
-              <Route path="/leisure" element={<Leisure />} />
-              <Route path="/banquet" element={<Banquet />} />
-            </Route>
-            
-            {/* Admin Routes */}
+            {/* vercel.json redirects / → /admin on the edge; this covers client-side navigation */}
+            <Route path="/" element={<Navigate to="/admin" replace />} />
+
             <Route path="/admin" element={<AdminLogin />} />
             <Route element={<AdminLayout />}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -104,7 +83,7 @@ const App = () => (
               <Route path="/admin/banquets" element={<AdminBanquets />} />
               <Route path="/admin/promotions" element={<AdminPromotions />} />
             </Route>
-            
+
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>

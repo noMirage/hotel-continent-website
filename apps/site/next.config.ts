@@ -32,6 +32,16 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // www → apex (canonical host)
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.hotel-continent.com" }],
+        destination: "https://hotel-continent.com/:path*",
+        permanent: true,
+      },
+      // The admin panel moved to its own subdomain; old bookmarks still point here.
+      { source: "/admin", destination: "https://admin.hotel-continent.com/admin", permanent: true },
+      { source: "/admin/:path*", destination: "https://admin.hotel-continent.com/admin/:path*", permanent: true },
       { source: "/uk", destination: "/", permanent: true },
       { source: "/uk/:path*", destination: "/:path*", permanent: true },
     ];

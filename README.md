@@ -54,7 +54,7 @@ Run either app against the demo database: put the demo values in `.env.demo.loca
 - When the admin changes rooms, prices, photos, settings or promotions, Postgres triggers call `POST /api/revalidate` (`supabase/webhooks/revalidate-site.sql`) and the affected pages refresh.
 - Availability is live: `GET /api/availability` (uses the `get_blocked_unit_ids` RPC).
 - Forms (booking, banquet, promotion, group request) are Server Actions in `apps/site/src/app/actions.ts`, protected by Vercel BotID. They call SECURITY DEFINER RPCs (`supabase/migrations/20261015000001_public_submission_rpcs.sql`) that validate input and compute prices / pick rooms in one transaction.
-- Translations: generated from the admin translations with `npm run i18n:sync -w @continent/site`.
+- Translations: `apps/site/src/i18n/dictionaries/{uk,en}.json` (site) and `apps/admin/src/i18n/translations.ts` (admin) are independent.
 
 ## Database migrations
 

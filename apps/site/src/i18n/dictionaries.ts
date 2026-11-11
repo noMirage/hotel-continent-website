@@ -2,8 +2,8 @@ import "server-only";
 import type { Locale } from "./config";
 import { translate, type Dictionary } from "./translate";
 
-// Generated from the admin translations (only keys the public site uses).
-// Regenerate with `npm run i18n:sync -w @continent/site` after editing apps/admin/src/i18n/translations.ts.
+// The site owns its dictionaries: edit src/i18n/dictionaries/{uk,en}.json directly (both
+// files must have the same keys — dictionaries.test.ts checks that).
 const dictionaries = {
   uk: () => import("./dictionaries/uk.json").then((m) => m.default),
   en: () => import("./dictionaries/en.json").then((m) => m.default),
