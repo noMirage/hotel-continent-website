@@ -1,0 +1,8 @@
+.env
+.env.*
+node_modules
+dist
+strategy
+.claude
+.next
+.turbo
