@@ -1,7 +1,14 @@
 # Cutover: public site on Next.js, admin on its own subdomain
 
-Branch `feat/monorepo-site`. Everything below is prepared and tested against the demo
-database; these steps switch production. Order matters — do them top to bottom.
+> **Status (2026-11-12): done.** hotel-continent.com is served by `apps/site`, the admin
+> panel lives at admin.hotel-continent.com, all migrations (incl. the former `pending/`
+> one) are applied to production, the revalidation webhook is installed and verified
+> (200), and a test booking from the site arrived in the admin as UNPROCESSED.
+> Still open: `www` → apex redirect (Vercel → site project → Domains → Edit),
+> the new demo Supabase project (step 1 note), rotating `SUPABASE_SECRET_KEY`,
+> and the admin clean-up PR (step 6).
+
+Branch `feat/monorepo-site` (merged as PR #1). Order matters — do them top to bottom.
 
 ## 0. Before you start
 
