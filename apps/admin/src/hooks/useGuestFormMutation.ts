@@ -3,6 +3,7 @@ import { differenceInDays, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import { useToast } from "@/hooks/use-toast";
+import { describeDbError } from "@/lib/db-errors";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { DEPOSIT_RATIO } from "@/lib/constants";
 
@@ -128,7 +129,7 @@ export function useGuestFormMutation({ onSaveSuccess }: Callbacks) {
     },
     onError: (e: Error) => {
       if (import.meta.env.DEV) console.error(e);
-      toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
+      toast({ title: t("common.error"), description: describeDbError(e, t, t("common.unexpectedError")), variant: "destructive" });
     },
   });
 

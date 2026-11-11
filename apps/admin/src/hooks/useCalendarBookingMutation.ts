@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import { useToast } from "@/hooks/use-toast";
+import { describeDbError } from "@/lib/db-errors";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { checkFeeConflicts } from "@/lib/booking-conflicts";
 import type { BookingStatus } from "@continent/shared/supabase-types";
@@ -83,7 +84,7 @@ export function useCalendarBookingMutation({
     },
     onSuccess: () => { invalidate(); onStatusSuccess(); },
     onError: (e: Error) =>
-      toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+      toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   const updateDetailsMutation = useMutation({
@@ -149,7 +150,7 @@ export function useCalendarBookingMutation({
       onDetailsSuccess();
     },
     onError: (e: Error) =>
-      toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+      toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
@@ -164,7 +165,7 @@ export function useCalendarBookingMutation({
       onDeleteSuccess();
     },
     onError: (e: Error) =>
-      toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+      toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   return { updateStatusMutation, updateDetailsMutation, deleteMutation };

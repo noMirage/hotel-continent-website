@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import { useToast } from "@/hooks/use-toast";
+import { describeDbError } from "@/lib/db-errors";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 type CleanlinessStatus = "clean" | "dirty" | "under_renovation";
@@ -25,7 +26,7 @@ export function useCalendarMutations({ onCleanlinessUpdated }: Callbacks) {
       toast({ title: t("calendar.cleanlinessUpdated") });
       onCleanlinessUpdated();
     },
-    onError: (e: Error) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   const moveMutation = useMutation({
@@ -52,7 +53,7 @@ export function useCalendarMutations({ onCleanlinessUpdated }: Callbacks) {
       queryClient.invalidateQueries({ queryKey: QK.adminBookings() });
       toast({ title: t("calendar.moved"), description: t("calendar.movedDesc") });
     },
-    onError: (e: Error) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   return { updateCleanlinessMutation, moveMutation };

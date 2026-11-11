@@ -3,9 +3,10 @@ import {
   format, addDays, subDays, eachDayOfInterval,
   differenceInDays, isToday, parseISO,
 } from "date-fns";
+import { layoutStay } from "@/lib/calendar-layout";
 import { uk as ukLocale, enUS } from "date-fns/locale";
 import {
-  ChevronLeft, ChevronRight, ZoomIn, ZoomOut, CalendarIcon,
+  ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ZoomIn, ZoomOut, CalendarIcon,
   AlertTriangle, Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -120,19 +121,13 @@ export default function AdminCalendar() {
   const reservationsByRoom = useMemo(() => {
     const map = new Map<string, ResCellItem[]>();
     if (!reservations) return map;
+    // layoutStay also yields span-0 "check-out stubs" for stays leaving on startDate,
+    // so today's departures are visible without scrolling back (staff feedback).
     for (const res of reservations) {
-      const checkIn  = parseISO(res.check_in_date);
-      const checkOut = parseISO(res.check_out_date);
-      const isActualStart = checkIn >= startDate;
-      const isActualEnd   = checkOut <= endDate;
-      const visStart   = isActualStart ? checkIn : startDate;
-      const clippedEnd = addDays(endDate, 1);
-      const visEnd     = checkOut > clippedEnd ? clippedEnd : checkOut;
-      const startCol   = differenceInDays(visStart, startDate);
-      const span       = differenceInDays(visEnd, visStart);
-      if (span <= 0) continue;
+      const layout = layoutStay(parseISO(res.check_in_date), parseISO(res.check_out_date), startDate, endDate);
+      if (!layout) continue;
       const arr = map.get(res.room_unit_id) ?? [];
-      arr.push({ res, startCol, span, isActualStart, isActualEnd });
+      arr.push({ res, ...layout });
       map.set(res.room_unit_id, arr);
     }
     return map;
@@ -146,17 +141,10 @@ export default function AdminCalendar() {
         const ra = gb.room_assignments?.find(a => a.room_unit_id === roomUnitId);
         const checkIn  = parseISO(ra?.check_in_override  ?? gb.check_in_date);
         const checkOut = parseISO(ra?.check_out_override ?? gb.check_out_date);
-        if (checkOut <= checkIn) continue;
-        const isActualStart = checkIn >= startDate;
-        const isActualEnd   = checkOut <= endDate;
-        const visStart   = isActualStart ? checkIn : startDate;
-        const clippedEnd = addDays(endDate, 1);
-        const visEnd     = checkOut > clippedEnd ? clippedEnd : checkOut;
-        const startCol   = differenceInDays(visStart, startDate);
-        const span       = differenceInDays(visEnd, visStart);
-        if (span <= 0) continue;
+        const layout = layoutStay(checkIn, checkOut, startDate, endDate);
+        if (!layout) continue;
         const arr = map.get(roomUnitId) ?? [];
-        arr.push({ gb, startCol, span, isActualStart, isActualEnd });
+        arr.push({ gb, ...layout });
         map.set(roomUnitId, arr);
       }
     }
@@ -356,8 +344,9 @@ export default function AdminCalendar() {
 
   // ── Navigation ────────────────────────────────────────────────────────────────
 
-  const goBack    = () => setStartDate(d => subDays(d, Math.floor(visibleDays / 2)));
-  const goForward = () => setStartDate(d => addDays(d, Math.floor(visibleDays / 2)));
+  const periodStep = Math.floor(visibleDays / 2);
+  const goBack    = (days: number) => setStartDate(d => subDays(d, days));
+  const goForward = (days: number) => setStartDate(d => addDays(d, days));
   const goToday   = () => { const d = new Date(); d.setHours(0, 0, 0, 0); setStartDate(d); };
 
   const isLoading  = roomsLoading || resLoading;
@@ -415,11 +404,13 @@ export default function AdminCalendar() {
           </Popover>
 
           <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" onClick={goBack}><ChevronLeft className="h-4 w-4" /></Button>
+            <Button variant="outline" size="icon" title={t("calendar.prevPeriod", { n: String(periodStep) })} onClick={() => goBack(periodStep)}><ChevronsLeft className="h-4 w-4" /></Button>
+            <Button variant="outline" size="icon" title={t("calendar.prevDay")} onClick={() => goBack(1)}><ChevronLeft className="h-4 w-4" /></Button>
             <span className="font-semibold text-foreground min-w-[180px] text-center text-sm">
               {format(startDate, "MMM d", { locale: dateLocale })} — {format(endDate, "MMM d, yyyy", { locale: dateLocale })}
             </span>
-            <Button variant="outline" size="icon" onClick={goForward}><ChevronRight className="h-4 w-4" /></Button>
+            <Button variant="outline" size="icon" title={t("calendar.nextDay")} onClick={() => goForward(1)}><ChevronRight className="h-4 w-4" /></Button>
+            <Button variant="outline" size="icon" title={t("calendar.nextPeriod", { n: String(periodStep) })} onClick={() => goForward(periodStep)}><ChevronsRight className="h-4 w-4" /></Button>
           </div>
         </div>
       </div>

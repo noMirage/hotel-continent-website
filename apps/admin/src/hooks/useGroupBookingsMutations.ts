@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import { useToast } from "@/hooks/use-toast";
+import { describeDbError } from "@/lib/db-errors";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { GroupBookingRequestStatus } from "@continent/shared/supabase-types";
 
@@ -30,7 +31,7 @@ export function useGroupBookingsMutations({
       toast({ title: t("groupBookings.deleted") });
       onDeleteBookingSuccess();
     },
-    onError: (e: Error) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   const deleteCalcMutation = useMutation({
@@ -43,7 +44,7 @@ export function useGroupBookingsMutations({
       toast({ title: t("calculations.deleted") });
       onDeleteCalcSuccess();
     },
-    onError: (e: Error) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   const statusMutation = useMutation({
@@ -55,7 +56,7 @@ export function useGroupBookingsMutations({
       queryClient.invalidateQueries({ queryKey: QK.groupBookings() });
       queryClient.invalidateQueries({ queryKey: QK.adminGroupStats() });
     },
-    onError: (e: Error) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   const updateRequestMutation = useMutation({

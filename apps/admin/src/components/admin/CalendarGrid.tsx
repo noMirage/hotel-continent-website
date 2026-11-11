@@ -359,6 +359,7 @@ export function CalendarGrid({
                                   <p className="text-xs">
                                     {format(parseISO(res.check_in_date), "dd.MM.yyyy")} – {format(parseISO(res.check_out_date), "dd.MM.yyyy")}
                                   </p>
+                                  {span === 0 && <p className="text-xs italic text-muted-foreground">{t("calendar.checkOutToday")}</p>}
                                   {(() => {
                                     const total   = Number(res.total_price);
                                     const deposit = res.deposit_amount != null ? Number(res.deposit_amount) : null;
