@@ -1,13 +1,9 @@
--- ⚠️ NOT a regular migration yet — lives in supabase/pending/ on purpose.
+-- Applied after the public site moved to apps/site (2026-11-12).
 --
 -- Drops the policies that let anonymous visitors INSERT directly into tables. After the
 -- public site runs on Next.js, every public form goes through the SECURITY DEFINER RPCs
 -- from 20261015000001_public_submission_rpcs.sql, so these policies are only an attack
 -- surface (spam, client-chosen prices).
---
--- Apply ONLY after hotel-continent.com is served by apps/site: the old SPA's public pages
--- still insert directly and would break. To apply: move this file to supabase/migrations/
--- and run `npx supabase db push` (prod), then the same with --db-url for the demo DB.
 --
 -- Staff inserts are unaffected: "Admins can create reservations" stays in place, and the
 -- admin panel never inserts into promo_applications / group_booking_requests.
