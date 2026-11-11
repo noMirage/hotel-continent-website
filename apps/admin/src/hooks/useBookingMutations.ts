@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { describeDbError } from "@/lib/db-errors";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Reservation, BookingStatus } from "@continent/shared/supabase-types";
 import { QK } from "@/lib/queryKeys";
@@ -47,7 +48,7 @@ export function useBookingMutations({ onStatusUpdated, onDeleted }: BookingMutat
     },
     onError: (error: Error) => {
       if (import.meta.env.DEV) console.error(error);
-      toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
+      toast({ title: t("common.error"), description: describeDbError(error, t, t("common.unexpectedError")), variant: "destructive" });
     },
   });
 
@@ -65,7 +66,7 @@ export function useBookingMutations({ onStatusUpdated, onDeleted }: BookingMutat
     },
     onError: (error: Error) => {
       if (import.meta.env.DEV) console.error(error);
-      toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
+      toast({ title: t("common.error"), description: describeDbError(error, t, t("common.unexpectedError")), variant: "destructive" });
     },
   });
 
@@ -84,7 +85,7 @@ export function useBookingMutations({ onStatusUpdated, onDeleted }: BookingMutat
     },
     onError: (error: Error) => {
       if (import.meta.env.DEV) console.error(error);
-      toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
+      toast({ title: t("common.error"), description: describeDbError(error, t, t("common.unexpectedError")), variant: "destructive" });
     },
   });
 
@@ -114,7 +115,7 @@ export function useBookingMutations({ onStatusUpdated, onDeleted }: BookingMutat
     },
     onError: (error: Error) => {
       if (import.meta.env.DEV) console.error(error);
-      toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
+      toast({ title: t("common.error"), description: describeDbError(error, t, t("common.unexpectedError")), variant: "destructive" });
     },
   });
 

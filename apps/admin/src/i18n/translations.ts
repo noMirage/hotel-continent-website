@@ -209,6 +209,11 @@ export const translations = {
   // Admin Calendar
   "calendar.title": { en: "Booking Calendar", uk: "Календар бронювань" },
   "calendar.today": { en: "Today", uk: "Сьогодні" },
+  "calendar.prevDay": { en: "Previous day", uk: "Попередній день" },
+  "calendar.nextDay": { en: "Next day", uk: "Наступний день" },
+  "calendar.prevPeriod": { en: "Back {n} days", uk: "Назад на {n} днів" },
+  "calendar.nextPeriod": { en: "Forward {n} days", uk: "Вперед на {n} днів" },
+  "calendar.checkOutToday": { en: "Checks out this day", uk: "Виїзд цього дня" },
   "calendar.room": { en: "Room", uk: "Номер" },
   "calendar.confirmed": { en: "Confirmed", uk: "Підтверджено" },
   "calendar.unprocessed": { en: "Unprocessed", uk: "Необроблено" },
@@ -448,6 +453,7 @@ export const translations = {
   // Common
   "common.error": { en: "Error", uk: "Помилка" },
   "common.unexpectedError": { en: "An unexpected error occurred. Please try again.", uk: "Сталася непередбачена помилка. Будь ласка, спробуйте ще раз." },
+  "common.roomUnavailable": { en: "This room is already booked for these dates — nothing was saved. Pick another room or change the dates.", uk: "Цей номер уже зайнятий на ці дати — нічого не збережено. Оберіть інший номер або змініть дати." },
   "common.loading": { en: "Loading...", uk: "Завантаження..." },
   "common.na": { en: "N/A", uk: "Н/Д" },
   "common.roomConflict": { en: "Room(s) {rooms} already have an active booking for those dates", uk: "Кімната(и) {rooms} вже зайнята(і) на ці дати" },

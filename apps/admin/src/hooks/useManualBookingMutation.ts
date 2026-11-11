@@ -3,6 +3,7 @@ import { format, differenceInDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import { useToast } from "@/hooks/use-toast";
+import { describeDbError } from "@/lib/db-errors";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getConflictingRooms } from "@/lib/booking-conflicts";
 import type { BookingStatus } from "@continent/shared/supabase-types";
@@ -85,7 +86,7 @@ export function useManualBookingMutation({ onBookingCreated }: Callbacks) {
     },
     onError: (e: Error) => {
       if (import.meta.env.DEV) console.error(e);
-      toast({ title: t("common.error"), description: t("common.unexpectedError"), variant: "destructive" });
+      toast({ title: t("common.error"), description: describeDbError(e, t, t("common.unexpectedError")), variant: "destructive" });
     },
   });
 

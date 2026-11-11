@@ -127,3 +127,25 @@ describe("checkFeeConflicts", () => {
     expect(result).toEqual({ earlyConflict: false, lateConflict: false });
   });
 });
+
+// ── Failed availability checks must not look like "no conflicts" ─────────────
+
+describe("getConflictingRooms: errors", () => {
+  it("RPC error (no-exclusion path) throws instead of returning []", async () => {
+    server.use(
+      http.post(`${BASE}/rest/v1/rpc/get_blocked_unit_ids`, () =>
+        HttpResponse.json({ message: "function does not exist" }, { status: 404 })),
+    );
+    await expect(getConflictingRooms(["unit-1"], "2025-07-01", "2025-07-03"))
+      .rejects.toThrow(/Availability check failed/);
+  });
+
+  it("reservations query error (admin path) throws instead of returning []", async () => {
+    server.use(
+      http.get(`${BASE}/rest/v1/reservations`, () =>
+        HttpResponse.json({ message: "permission denied" }, { status: 403 })),
+    );
+    await expect(getConflictingRooms(["unit-1"], "2025-07-01", "2025-07-03", ["res-9"]))
+      .rejects.toThrow(/Availability check failed/);
+  });
+});

@@ -3,6 +3,7 @@ import { format, differenceInDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { QK } from "@/lib/queryKeys";
 import { useToast } from "@/hooks/use-toast";
+import { describeDbError } from "@/lib/db-errors";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getConflictingRooms } from "@/lib/booking-conflicts";
 import { getEffectivePrice } from "@continent/shared/room-pricing";
@@ -123,7 +124,7 @@ export function useCalendarGroupMutation({ onStdSuccess, onGroupSuccess }: Callb
       onStdSuccess();
     },
     onError: (e: Error) =>
-      toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+      toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   const createGroupMutation = useMutation({
@@ -207,7 +208,7 @@ export function useCalendarGroupMutation({ onStdSuccess, onGroupSuccess }: Callb
       onGroupSuccess();
     },
     onError: (e: Error) =>
-      toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+      toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   return { createStdMutation, createGroupMutation };

@@ -118,8 +118,10 @@ const GROUP_CUSTOM_INPUT: CreateGroupBookingInput = {
 
 // ── MSW handler sets ──────────────────────────────────────────────────────────
 
-// getConflictingRooms makes two GETs (regular reservations + group bookings).
+// getConflictingRooms without exclusions calls the get_blocked_unit_ids RPC; the two GETs
+// cover the admin path with exclusions.
 const noConflictHandlers = [
+  http.post(`${BASE}/rest/v1/rpc/get_blocked_unit_ids`, () => HttpResponse.json([])),
   http.get(`${BASE}/rest/v1/reservations`,   () => HttpResponse.json([])),
   http.get(`${BASE}/rest/v1/group_bookings`, () => HttpResponse.json([])),
 ];

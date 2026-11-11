@@ -25,8 +25,11 @@ export async function getConflictingRooms(
   // Direct SELECT on reservations requires admin auth (RLS). Use the
   // SECURITY DEFINER RPC which exposes only room_unit_id — no guest PII.
   if (!excludeReservationIds?.length && !excludeGroupBookingId) {
-    const { data: blocked } = await supabase
+    const { data: blocked, error } = await supabase
       .rpc("get_blocked_unit_ids", { p_check_in: checkIn, p_check_out: checkOut });
+    // Never treat a failed check as "no conflicts": that is how a room already taken
+    // for those nights could be offered as free.
+    if (error) throw new Error(`Availability check failed: ${error.message}`);
     const blockedSet = new Set((blocked ?? []).map((r) => r.room_unit_id));
     return roomUnitIds.filter(id => blockedSet.has(id));
   }
@@ -47,7 +50,8 @@ export async function getConflictingRooms(
     resQ = resQ.not("id", "in", `(${excludeReservationIds.join(",")})`);
   }
 
-  const { data: resCon } = await resQ;
+  const { data: resCon, error: resError } = await resQ;
+  if (resError) throw new Error(`Availability check failed: ${resError.message}`);
   for (const r of resCon ?? []) conflicting.add(r.room_unit_id);
 
   // ── Group bookings ─────────────────────────────────────────────────────────
@@ -63,7 +67,8 @@ export async function getConflictingRooms(
     grpQ = grpQ.neq("id", excludeGroupBookingId);
   }
 
-  const { data: grpCon } = await grpQ;
+  const { data: grpCon, error: grpError } = await grpQ;
+  if (grpError) throw new Error(`Availability check failed: ${grpError.message}`);
   for (const g of grpCon ?? []) {
     for (const id of g.room_unit_ids as string[]) {
       if (roomUnitIds.includes(id)) conflicting.add(id);

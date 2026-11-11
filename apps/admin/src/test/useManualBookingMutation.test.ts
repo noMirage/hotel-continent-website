@@ -88,10 +88,12 @@ function expectInvalidated() {
  *  1. GET /profiles          — commission_rate lookup (maybeSingle → unwraps array)
  *  2. GET /reservations      — getConflictingRooms: regular-booking overlap check
  *  3. GET /group_bookings    — getConflictingRooms: group-booking overlap check
+ *     (without exclusions getConflictingRooms actually calls the get_blocked_unit_ids RPC)
  *  4. POST /reservations     — the actual insert
  */
 function successHandlers() {
   return [
+    http.post(`${BASE}/rest/v1/rpc/get_blocked_unit_ids`, () => HttpResponse.json([])),
     http.get(`${BASE}/rest/v1/profiles`,      () => HttpResponse.json([])),
     http.get(`${BASE}/rest/v1/reservations`,  () => HttpResponse.json([])),
     http.get(`${BASE}/rest/v1/group_bookings`,() => HttpResponse.json([])),
@@ -182,10 +184,11 @@ describe("useManualBookingMutation", () => {
       });
       server.use(
         http.get(`${BASE}/rest/v1/profiles`,      () => HttpResponse.json([])),
-        // reservations overlap check returns the conflicting unit
-        http.get(`${BASE}/rest/v1/reservations`,  () =>
+        // availability RPC returns the conflicting unit
+        http.post(`${BASE}/rest/v1/rpc/get_blocked_unit_ids`, () =>
           HttpResponse.json([{ room_unit_id: "unit-1" }])
         ),
+        http.get(`${BASE}/rest/v1/reservations`,  () => HttpResponse.json([])),
         http.get(`${BASE}/rest/v1/group_bookings`,() => HttpResponse.json([])),
         // POST must not be reached — no handler registered for it
       );

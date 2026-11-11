@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { differenceInDays, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { describeDbError } from "@/lib/db-errors";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { checkFeeConflicts } from "@/lib/booking-conflicts";
 import type { GroupBooking } from "@continent/shared/supabase-types";
@@ -115,7 +116,7 @@ export function useGroupBookingDetailsMutations(
       toast({ title: t("groupBookings.updated") });
       callbacks.onUpdateSuccess({ newTotal, newDeposit });
     },
-    onError: (e: Error) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   const saveGuestsMutation = useMutation({
@@ -182,7 +183,7 @@ export function useGroupBookingDetailsMutations(
       toast({ title: t("groupBookings.guestsSaved") });
       callbacks.onGuestsSaved(result);
     },
-    onError: (e: Error) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: t("common.error"), description: describeDbError(e, t), variant: "destructive" }),
   });
 
   return { updateBookingMutation, saveGuestsMutation };
