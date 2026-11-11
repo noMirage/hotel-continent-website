@@ -9,7 +9,6 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
-    "i18n:sync": "node scripts/sync-i18n.mjs",
     "lint": "eslint .",
     "test": "vitest run"
   },
